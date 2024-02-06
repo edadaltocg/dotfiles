@@ -1,0 +1,12 @@
+sync:
+  defaults:
+    watch:
+      pollingInterval: 1
+    ignore:
+      vcs: true
+      paths:
+        - ".pdf"
+        - ".png"
+        - ".DS_Store"
+        - ".bin"
+        - ".tar"

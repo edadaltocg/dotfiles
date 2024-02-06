@@ -1,0 +1,11 @@
+.cache
+.npm
+.local
+.bash_history
+.python_history
+.zsh_history
+.zcompdump*
+neovim/
+github-copilot/
+.zsh
+.oh-my-zsh
