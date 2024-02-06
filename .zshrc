@@ -89,7 +89,6 @@ plugins=(
         node
         npm
         zsh-syntax-highlighting
-        zsh-vi-mode
 )
 
 source $ZSH/oh-my-zsh.sh
