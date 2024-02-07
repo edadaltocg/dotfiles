@@ -124,6 +124,21 @@ lvim.plugins = {
   "hrsh7th/nvim-cmp",
 
   {
+    "ray-x/go.nvim",
+    dependencies = { -- optional packages
+      "ray-x/guihua.lua",
+      "neovim/nvim-lspconfig",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("go").setup()
+    end,
+    event = { "CmdlineEnter" },
+    ft = { "go", "gomod" },
+    build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
+  },
+
+  {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v2.x",
     dependencies = {
@@ -209,6 +224,19 @@ lvim.plugins = {
 lvim.builtin.treesitter.ensure_installed = {
   "python",
 }
+
+require("mason-lspconfig").setup({
+  ensure_installed = {
+    "lua_ls",
+    "rust_analyzer",
+    "gopls",
+    "texlab",
+    "templ",
+    "pyright",
+    "html",
+    "htmx",
+  },
+})
 -- Language Server: install with mason
 vim.filetype.add({ extension = { templ = "templ" } })
 local lspconfig = require("lspconfig")
