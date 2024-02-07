@@ -223,20 +223,22 @@ lvim.plugins = {
 -- Synthax highlighting
 lvim.builtin.treesitter.ensure_installed = {
   "python",
+  "markdown_inline",
+  "regex",
+  "bash",
+  "javascript",
+  "json",
+  "lua",
+  "typescript",
+  "tsx",
+  "css",
+  "yaml",
+  "gomod",
+  "go",
+  "hcl",
+  "markdown",
 }
 
-require("mason-lspconfig").setup({
-  ensure_installed = {
-    "lua_ls",
-    "rust_analyzer",
-    "gopls",
-    "texlab",
-    "templ",
-    "pyright",
-    "html",
-    "htmx",
-  },
-})
 -- Language Server: install with mason
 vim.filetype.add({ extension = { templ = "templ" } })
 local lspconfig = require("lspconfig")
@@ -269,7 +271,7 @@ lspconfig.htmx.setup({
 -- Formatters
 local formatters = require("lvim.lsp.null-ls.formatters")
 formatters.setup({
-  { name = "black", extra_args = { "--line-length", "168" } },
+  { name = "black" },
   { name = "stylua" },
   { name = "prettier" },
   { name = "gofumpt" },
@@ -286,6 +288,30 @@ local mason_path = vim.fn.glob(vim.fn.stdpath("data") .. "/mason/")
 pcall(function()
   require("dap-python").setup(mason_path .. "packages/debugpy/venv/bin/python")
 end)
+
+lvim.lsp.installer.setup.ensure_installed = {
+  "lua_ls",
+  "rust_analyzer",
+  "texlab",
+  "templ",
+  "pyright",
+  "html",
+  "htmx",
+  "awk_ls",
+  "bashls",
+  "cssls",
+  "dockerls",
+  "graphql",
+  "html",
+  "jsonls",
+  "tsserver",
+  "marksman",
+  "pyright",
+  "sqlls",
+  "tailwindcss",
+  "terraformls",
+  "yamlls",
+}
 
 -- setup testing
 require("neotest").setup({
