@@ -82,7 +82,6 @@ plugins=(
         rsync
         tmux
         torrent
-        vi-mode
         web-search
         github
         golang
