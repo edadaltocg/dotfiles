@@ -1,5 +1,4 @@
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-    PATH="$PATH:/usr/local/go/bin"
-    PATH="$PATH:/root/.local/bin"
-fi
+PATH="$HOME/.local/bin:$PATH"
+PATH="$PATH:/root/.local/bin"
+PATH="$PATH:/usr/local/go/bin"
+PATH="$PATH:$HOME:.cargo/env"

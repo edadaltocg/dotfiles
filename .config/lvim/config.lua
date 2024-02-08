@@ -23,6 +23,7 @@ lvim.plugins = {
   "projekt0n/github-nvim-theme",
   "mfussenegger/nvim-dap",
   "mfussenegger/nvim-dap-python",
+  "theHamsta/nvim-dap-virtual-text",
   "prabirshrestha/vim-lsp",
   -- harpoon
   {
