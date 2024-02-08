@@ -119,5 +119,6 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 [ -f ~/.cargo/env ] && source $HOME/.cargo/env
-HISTFILE=~/.zsh_history
+export HISTFILE=~/.zsh_history
+export NVIM_LISTEN_ADDRESS=/tmp/nvimsocket
 
