@@ -48,10 +48,10 @@ lvim.plugins = {
     "romgrk/nvim-treesitter-context",
     config = function()
       require("treesitter-context").setup({
-        enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+        enable = true,   -- Enable this plugin (Can be enabled/disabled later via commands)
         throttle = true, -- Throttles plugin updates (may improve performance)
-        max_lines = 3, -- How many lines the window should span. Values <= 0 mean no limit.
-        patterns = { -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
+        max_lines = 3,   -- How many lines the window should span. Values <= 0 mean no limit.
+        patterns = {     -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
           -- For all filetypes
           -- Note that setting an entry here replaces all other patterns for this entry.
           -- By setting the 'default' entry below, you can control which nodes you want to
@@ -81,7 +81,7 @@ lvim.plugins = {
     dependencies = { "zbirenbaum/copilot.lua" },
     config = function()
       vim.defer_fn(function()
-        require("copilot").setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+        require("copilot").setup()     -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
         require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
       end, 100)
     end,
@@ -104,10 +104,10 @@ lvim.plugins = {
     "christoomey/vim-tmux-navigator",
     keys = {
       { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Go to the previous pane" },
-      { "<C-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "Got to the left pane" },
-      { "<C-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Got to the down pane" },
-      { "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Got to the up pane" },
-      { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Got to the right pane" },
+      { "<C-h>",  "<cmd>TmuxNavigateLeft<cr>",     desc = "Got to the left pane" },
+      { "<C-j>",  "<cmd>TmuxNavigateDown<cr>",     desc = "Got to the down pane" },
+      { "<C-k>",  "<cmd>TmuxNavigateUp<cr>",       desc = "Got to the up pane" },
+      { "<C-l>",  "<cmd>TmuxNavigateRight<cr>",    desc = "Got to the right pane" },
     },
   },
 
@@ -272,7 +272,6 @@ lspconfig.htmx.setup({
 -- Formatters
 local formatters = require("lvim.lsp.null-ls.formatters")
 formatters.setup({
-  { name = "black" },
   { name = "stylua" },
   { name = "prettier" },
   { name = "gofumpt" },
@@ -293,12 +292,9 @@ end)
 lvim.lsp.installer.setup.ensure_installed = {
   "lua_ls",
   "rust_analyzer",
-  "texlab",
   "templ",
-  "pyright",
   "html",
   "htmx",
-  "awk_ls",
   "bashls",
   "cssls",
   "dockerls",
@@ -307,7 +303,6 @@ lvim.lsp.installer.setup.ensure_installed = {
   "jsonls",
   "tsserver",
   "marksman",
-  "pyright",
   "sqlls",
   "tailwindcss",
   "terraformls",
@@ -333,7 +328,7 @@ require("neotest").setup({
 -- Key mappings
 lvim.builtin.which_key.mappings["dm"] = { "<cmd>lua require('neotest').run.run()<cr>", "Test Method" }
 lvim.builtin.which_key.mappings["dM"] =
-  { "<cmd>lua require('neotest').run.run({strategy = 'dap'})<cr>", "Test Method DAP" }
+{ "<cmd>lua require('neotest').run.run({strategy = 'dap'})<cr>", "Test Method DAP" }
 lvim.builtin.which_key.mappings["df"] = {
   "<cmd>lua require('neotest').run.run({vim.fn.expand('%')})<cr>",
   "Test Class",
@@ -422,3 +417,30 @@ end)
 vim.keymap.set("n", "<leader>9", function()
   harpoon:list():select(9)
 end)
+
+-- Configure `ruff-lsp`.
+local configs = require("lspconfig.configs")
+if not configs.ruff_lsp then
+  configs.ruff_lsp = {
+    default_config = {
+      cmd = { "ruff-lsp" },
+      filetypes = { "python" },
+      root_dir = require("lspconfig").util.find_git_ancestor,
+      init_options = {
+        settings = {
+          args = {},
+        },
+      },
+    },
+  }
+end
+lspconfig.ruff_lsp.setup({
+  init_options = {
+    settings = {
+      args = {
+        "--extend-select=W,COM,ICN",
+        "--ignore=E501,E722,COM812",
+      },
+    },
+  },
+})
