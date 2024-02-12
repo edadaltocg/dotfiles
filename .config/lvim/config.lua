@@ -12,19 +12,20 @@ vim.opt.smartindent = true
 lvim.builtin.nvimtree.active = false
 lvim.builtin.treesitter.autotag.enable = true
 lvim.format_on_save = true
-
 lvim.colorscheme = "github_dark_dimmed"
 
 -- Plugins
 lvim.plugins = {
-  "ChristianChiarulli/swenv.nvim",
-  "stevearc/dressing.nvim",
-  "windwp/nvim-ts-autotag",
-  "projekt0n/github-nvim-theme",
-  "mfussenegger/nvim-dap",
-  "mfussenegger/nvim-dap-python",
-  "theHamsta/nvim-dap-virtual-text",
-  "prabirshrestha/vim-lsp",
+
+  {
+    "windwp/nvim-ts-autotag",
+    config = function()
+      require("nvim-ts-autotag").setup()
+    end,
+  },
+
+  "mustache/vim-mustache-handlebars",
+
   -- harpoon
   {
     "ThePrimeagen/harpoon",
@@ -32,26 +33,16 @@ lvim.plugins = {
     dependencies = { "nvim-lua/plenary.nvim" },
   },
   { "olexsmir/gopher.nvim" },
-  {
-    "leoluz/nvim-dap-go",
-    ft = "go",
-    dependencies = "mfussenegger/nvim-dap",
-    config = function(_, opts)
-      require("dap-go").setup(opts)
-    end,
-  },
-  "nvim-neotest/neotest",
-  "nvim-neotest/neotest-python",
   "projekt0n/github-nvim-theme",
   "folke/trouble.nvim",
   {
     "romgrk/nvim-treesitter-context",
     config = function()
       require("treesitter-context").setup({
-        enable = true,   -- Enable this plugin (Can be enabled/disabled later via commands)
+        enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
         throttle = true, -- Throttles plugin updates (may improve performance)
-        max_lines = 3,   -- How many lines the window should span. Values <= 0 mean no limit.
-        patterns = {     -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
+        max_lines = 3, -- How many lines the window should span. Values <= 0 mean no limit.
+        patterns = { -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
           -- For all filetypes
           -- Note that setting an entry here replaces all other patterns for this entry.
           -- By setting the 'default' entry below, you can control which nodes you want to
@@ -65,32 +56,19 @@ lvim.plugins = {
       })
     end,
   },
-  {
-    "folke/lsp-colors.nvim",
-    event = "BufRead",
-  },
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      "buschco/nvim-cmp-ts-tag-close",
-    },
-  },
+
   {
     "zbirenbaum/copilot-cmp",
     event = "InsertEnter",
     dependencies = { "zbirenbaum/copilot.lua" },
     config = function()
       vim.defer_fn(function()
-        require("copilot").setup()     -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+        require("copilot").setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
         require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
       end, 100)
     end,
   },
-  {
-    "ellisonleao/glow.nvim",
-    config = true,
-    cmd = "Glow",
-  },
+
   {
     "iamcco/markdown-preview.nvim",
     build = "cd app && npm install",
@@ -104,10 +82,10 @@ lvim.plugins = {
     "christoomey/vim-tmux-navigator",
     keys = {
       { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Go to the previous pane" },
-      { "<C-h>",  "<cmd>TmuxNavigateLeft<cr>",     desc = "Got to the left pane" },
-      { "<C-j>",  "<cmd>TmuxNavigateDown<cr>",     desc = "Got to the down pane" },
-      { "<C-k>",  "<cmd>TmuxNavigateUp<cr>",       desc = "Got to the up pane" },
-      { "<C-l>",  "<cmd>TmuxNavigateRight<cr>",    desc = "Got to the right pane" },
+      { "<C-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "Got to the left pane" },
+      { "<C-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Got to the down pane" },
+      { "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Got to the up pane" },
+      { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Got to the right pane" },
     },
   },
 
@@ -118,11 +96,6 @@ lvim.plugins = {
       -- add any custom options here
     },
   },
-
-  "lervag/vimtex",
-  "neovim/nvim-lspconfig",
-  "hrsh7th/cmp-nvim-lsp",
-  "hrsh7th/nvim-cmp",
 
   {
     "ray-x/go.nvim",
@@ -280,14 +253,7 @@ formatters.setup({
 
 -- Linting
 local linters = require("lvim.lsp.null-ls.linters")
-linters.setup({ { name = "mypy" } })
-
--- setup debug adapter
-lvim.builtin.dap.active = true
-local mason_path = vim.fn.glob(vim.fn.stdpath("data") .. "/mason/")
-pcall(function()
-  require("dap-python").setup(mason_path .. "packages/debugpy/venv/bin/python")
-end)
+linters.setup({ { name = "mypy" }, { name = "ruff" } })
 
 lvim.lsp.installer.setup.ensure_installed = {
   "lua_ls",
@@ -307,48 +273,6 @@ lvim.lsp.installer.setup.ensure_installed = {
   "tailwindcss",
   "terraformls",
   "yamlls",
-}
-
--- setup testing
-require("neotest").setup({
-  adapters = {
-    require("neotest-python")({
-      -- Extra arguments for nvim-dap configuration
-      -- See https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for values
-      dap = {
-        justMyCode = false,
-        console = "integratedTerminal",
-      },
-      args = { "--log-level", "DEBUG", "--quiet" },
-      runner = "pytest",
-    }),
-  },
-})
-
--- Key mappings
-lvim.builtin.which_key.mappings["dm"] = { "<cmd>lua require('neotest').run.run()<cr>", "Test Method" }
-lvim.builtin.which_key.mappings["dM"] =
-{ "<cmd>lua require('neotest').run.run({strategy = 'dap'})<cr>", "Test Method DAP" }
-lvim.builtin.which_key.mappings["df"] = {
-  "<cmd>lua require('neotest').run.run({vim.fn.expand('%')})<cr>",
-  "Test Class",
-}
-lvim.builtin.which_key.mappings["dF"] = {
-  "<cmd>lua require('neotest').run.run({vim.fn.expand('%'), strategy = 'dap'})<cr>",
-  "Test Class DAP",
-}
-lvim.builtin.which_key.mappings["dS"] = { "<cmd>lua require('neotest').summary.toggle()<cr>", "Test Summary" }
-
-lvim.builtin.which_key.mappings["bx"] = { "<cmd>BufferKill<cr>", "Close buffer" }
-lvim.builtin.which_key.mappings["<Tab>"] = {
-  "<cmd>lua require('telescope.builtin').buffers({ sort_lastused = true })<cr>",
-  "Switch buffers",
-}
-
-lvim.builtin.which_key.mappings["P"] = {
-  name = "Python",
-  c = { "<cmd>lua require('swenv.api').pick_venv()<cr>", "Choose Env" },
-  r = { "<cmd>!python3 %<cr>", "Run current file" },
 }
 
 lvim.builtin.which_key.mappings["S"] = {
@@ -418,29 +342,40 @@ vim.keymap.set("n", "<leader>9", function()
   harpoon:list():select(9)
 end)
 
--- Configure `ruff-lsp`.
-local configs = require("lspconfig.configs")
-if not configs.ruff_lsp then
-  configs.ruff_lsp = {
-    default_config = {
-      cmd = { "ruff-lsp" },
-      filetypes = { "python" },
-      root_dir = require("lspconfig").util.find_git_ancestor,
-      init_options = {
-        settings = {
-          args = {},
-        },
-      },
-    },
-  }
+local on_attach = function(client, bufnr)
+  -- Enable completion triggered by <c-x><c-o>
+  vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+
+  -- Mappings.
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  local bufopts = { noremap = true, silent = true, buffer = bufnr }
+  vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+  vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
+  vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
+  vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
+  vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
+  vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
+  vim.keymap.set("n", "<space>wl", function()
+    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  end, bufopts)
+  vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
+  vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+  vim.keymap.set("n", "<space>f", function()
+    vim.lsp.buf.format({ async = true })
+  end, bufopts)
 end
-lspconfig.ruff_lsp.setup({
+
+require("lspconfig").ruff_lsp.setup({
+  on_attach = on_attach,
   init_options = {
     settings = {
-      args = {
-        "--extend-select=W,COM,ICN",
-        "--ignore=E501,E722,COM812",
-      },
+      -- Any extra CLI arguments for `ruff` go here.
+      args = {},
     },
   },
 })
+
+require("lspconfig").jedi_language_server.setup({})
