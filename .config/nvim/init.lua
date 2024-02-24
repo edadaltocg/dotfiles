@@ -88,7 +88,7 @@ require("lazy").setup({
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { "j-hui/fidget.nvim", opts = {} },
+      { "j-hui/fidget.nvim",       opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       "folke/neodev.nvim",
@@ -124,7 +124,7 @@ require("lazy").setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { "folke/which-key.nvim", opts = {} },
+  { "folke/which-key.nvim",  opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     "lewis6991/gitsigns.nvim",
@@ -202,10 +202,6 @@ require("lazy").setup({
 
   {
     "kdheepak/lazygit.nvim",
-    requires = {
-      "nvim-telescope/telescope.nvim",
-      "nvim-lua/plenary.nvim",
-    },
     config = function()
       require("telescope").load_extension("lazygit")
     end,
@@ -294,6 +290,12 @@ require("lazy").setup({
     },
     build = ":TSUpdate",
   },
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    opts = {
+      multiline_threshold = 3,
+    }
+  },
 
   {
     "windwp/nvim-autopairs",
@@ -312,20 +314,26 @@ require("lazy").setup({
     "christoomey/vim-tmux-navigator",
     keys = {
       { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Go to the previous pane" },
-      { "<C-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "Got to the left pane" },
-      { "<C-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Got to the down pane" },
-      { "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Got to the up pane" },
-      { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Got to the right pane" },
+      { "<C-h>",  "<cmd>TmuxNavigateLeft<cr>",     desc = "Got to the left pane" },
+      { "<C-j>",  "<cmd>TmuxNavigateDown<cr>",     desc = "Got to the down pane" },
+      { "<C-k>",  "<cmd>TmuxNavigateUp<cr>",       desc = "Got to the up pane" },
+      { "<C-l>",  "<cmd>TmuxNavigateRight<cr>",    desc = "Got to the right pane" },
     },
   },
 
   {
     "zbirenbaum/copilot-cmp",
+    cmd = "Copilot",
     event = "InsertEnter",
     dependencies = { "zbirenbaum/copilot.lua" },
     config = function()
       vim.defer_fn(function()
-        require("copilot").setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+        require("copilot").setup(
+          {
+            suggestion = { enabled = false },
+            panel = { enabled = false },
+          }
+        )                              -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
         require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
       end, 100)
     end,
@@ -338,7 +346,7 @@ require("lazy").setup({
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
-      "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
+      "3rd/image.nvim",              -- Optional image support in preview window: See `# Preview Mode` for more information
     },
     opts = {
       close_if_last_window = true,
@@ -364,6 +372,49 @@ require("lazy").setup({
     },
   },
 
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    }
+  },
+
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = function()
+      vim.fn["mkdp#util#install"]()
+    end,
+    keys = {
+      {
+        "<leader>mp",
+        ft = "markdown",
+        "<cmd>MarkdownPreviewToggle<cr>",
+        desc = "Markdown Preview",
+      },
+    },
+    config = function()
+      vim.cmd([[do FileType]])
+    end,
+  },
+  'godlygeek/tabular',
+  'preservim/vim-markdown',
+
+  -- Refactor
+  {
+    "ThePrimeagen/refactoring.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("refactoring").setup()
+    end,
+  },
+
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -384,10 +435,11 @@ require("lazy").setup({
 -- NOTE: You can change these options as you wish!
 
 -- Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 
 -- Make line numbers default
 vim.wo.relativenumber = true
+vim.wo.number = true
 
 -- Enable mouse mode
 vim.o.mouse = "a"
@@ -413,6 +465,17 @@ vim.wo.signcolumn = "yes"
 -- Decrease update time
 vim.o.updatetime = 250
 vim.o.timeoutlen = 300
+
+vim.g.vim_markdown_folding_disabled = 1
+
+vim.g.vim_markdown_conceal = 0
+
+vim.g.tex_conceal = ""
+vim.g.vim_markdown_math = 1
+
+vim.g.vim_markdown_frontmatter = 1
+vim.g.vim_markdown_toml_frontmatter = 1
+vim.g.vim_markdown_json_frontmatter = 1
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = "menuone,noselect"
@@ -552,17 +615,22 @@ vim.defer_fn(function()
       "vimdoc",
       "vim",
       "bash",
+      "markdown",
+      "markdown_inline",
+      "json",
+      "yaml",
+      "css",
     },
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-    auto_install = false,
+    auto_install = true,
     -- Install languages synchronously (only applied to `ensure_installed`)
     sync_install = false,
     -- List of parsers to ignore installing
     ignore_install = {},
     -- You can specify additional Treesitter modules here: -- For example: -- playground = {--enable = true,-- },
     modules = {},
-    highlight = { enable = true },
+    highlight = { enable = true, additional_vim_regex_highlighting = { "markdown" }, },
     indent = { enable = true },
     incremental_selection = {
       enable = true,
@@ -661,6 +729,14 @@ local on_attach = function(_, bufnr)
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, "[W]orkspace [L]ist Folders")
 
+  -- Navigate windows
+  -- nmap <silent> <c-k> :wincmd k<CR>
+  nmap("<silent>", "<c-k>", ":wincmd k<CR>")
+  nmap("<silent>", "<c-j>", ":wincmd j<CR>")
+  nmap("<silent>", "<c-h>", ":wincmd h<CR>")
+  nmap("<silent>", "<c-l>", ":wincmd l<CR>")
+
+
   -- Create a command `:Format` local to the LSP buffer
   vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
     vim.lsp.buf.format()
@@ -683,6 +759,7 @@ require("which-key").register({
   ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
   ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
   ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
+  ["<leader>m"] = { name = "[M]arkdown", _ = "which_key_ignore" },
 })
 -- register which-key VISUAL mode
 -- required for visual <leader>hs (hunk stage) to work
@@ -721,6 +798,15 @@ local servers = {
     },
   },
 }
+
+-- setup Grammarly
+require('lspconfig').grammarly.setup({
+  filetypes = { "markdown", "tex", "text", },
+  -- init_options = {
+  --     clientId = "client_"
+  -- },
+  init_options = { clientId = 'client_BaDkMgx4X19X9UxxYRCXZo', },
+})
 
 -- Setup neovim lua configuration
 require("neodev").setup()
@@ -794,6 +880,7 @@ cmp.setup({
   }),
   sources = {
     { name = "nvim_lsp" },
+    { name = "copilot", group_index = 2 },
     { name = "luasnip" },
     { name = "path" },
   },
