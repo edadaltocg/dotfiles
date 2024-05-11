@@ -1,41 +1,6 @@
 --[[
-
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-
-Kickstart.nvim is *not* a distribution.
-
-Kickstart.nvim is a template for your own configuration.
-  The goal is that you can read every line of code, top-to-bottom, understand
-  what your configuration is doing, and modify it to suit your needs.
-
-  Once you've done that, you should start exploring, configuring and tinkering to
-  explore Neovim!
-
-  If you don't know anything about Lua, I recommend taking some time to read through
-  a guide. One possible example:
-  - https://learnxinyminutes.com/docs/lua/
-
-
   And then you can explore or search through `:help lua-guide`
   - https://neovim.io/doc/user/lua-guide.html
-
-
-Kickstart Guide:
-
-I have left several `:help X` comments throughout the init.lua
-You should run that command and read that help section for more information.
-
-In addition, I have some `NOTE:` items throughout the file.
-These are for you, the reader to help understand what is happening. Feel free to delete
-them once you know what you're doing, but they should serve as a guide for when you
-are first encountering a few different constructs in your nvim config.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now :)
 --]]
 
 -- Set <space> as the leader key
@@ -205,6 +170,26 @@ require("lazy").setup({
     config = function()
       require("telescope").load_extension("lazygit")
     end,
+  },
+
+  {
+    'cameron-wags/rainbow_csv.nvim',
+    config = true,
+    ft = {
+      'csv',
+      'tsv',
+      'csv_semicolon',
+      'csv_whitespace',
+      'csv_pipe',
+      'rfc_csv',
+      'rfc_semicolon'
+    },
+    cmd = {
+      'RainbowDelim',
+      'RainbowDelimSimple',
+      'RainbowDelimQuoted',
+      'RainbowMultiDelim'
+    }
   },
 
   -- {
@@ -403,6 +388,12 @@ require("lazy").setup({
   'godlygeek/tabular',
   'preservim/vim-markdown',
 
+  -- Tailwind
+  {
+    "luckasRanarison/tailwind-tools.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {} -- your configuration
+  },
   -- Refactor
   {
     "ThePrimeagen/refactoring.nvim",
@@ -526,6 +517,11 @@ require("telescope").setup({
       },
     },
   },
+  -- pickers = {
+  --   find_files = {
+  --     hidden = true,
+  --   },
+  -- },
 })
 
 -- Enable telescope fzf native, if installed
@@ -588,7 +584,9 @@ vim.keymap.set("n", "<leader>s/", telescope_live_grep_open_files, { desc = "[S]e
 vim.keymap.set("n", "<leader>ss", require("telescope.builtin").builtin, { desc = "[S]earch [S]elect Telescope" })
 vim.keymap.set("n", "<leader>gf", require("telescope.builtin").git_files, { desc = "Search [G]it [F]iles" })
 vim.keymap.set("n", "<leader>gg", ":LazyGit<cr>", { desc = "LazyGit" })
-vim.keymap.set("n", "<leader>sf", require("telescope.builtin").find_files, { desc = "[S]earch [F]iles" })
+vim.keymap.set("n", "<leader>sf",
+  "<cmd>lua require'telescope.builtin'.find_files({ find_command = {'rg', '--files', '--hidden', '-g', '!.git' }})<cr>",
+  { desc = "[S]earch [F]iles" })
 vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
 vim.keymap.set("n", "<leader>sw", require("telescope.builtin").grep_string, { desc = "[S]earch current [W]ord" })
 vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
@@ -783,11 +781,19 @@ require("mason-lspconfig").setup()
 --  define the property 'filetypes' to the map in question.
 local servers = {
   clangd = {},
-  gopls = {},
+  gopls = {
+    completeUnimported = true,
+    usePlaceholders = true,
+    analyses = {
+      unusedparams = true,
+    },
+  },
   -- pyright = {},
   rust_analyzer = {},
   tsserver = {},
-  html = { filetypes = { "html", "twig", "hbs" } },
+  html = { filetypes = { "html", "twig", "hbs", "templ" } },
+  templ = {},
+  htmx = { filetypes = { "html", "templ" } },
 
   lua_ls = {
     Lua = {
@@ -807,6 +813,9 @@ require('lspconfig').grammarly.setup({
   -- },
   init_options = { clientId = 'client_BaDkMgx4X19X9UxxYRCXZo', },
 })
+
+-- setup templ
+vim.filetype.add({ extension = { templ = "templ" } })
 
 -- Setup neovim lua configuration
 require("neodev").setup()

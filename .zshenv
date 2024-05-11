@@ -1,7 +1,8 @@
 PATH="$HOME/.local/bin:$PATH"
 PATH="$PATH:/root/.local/bin"
 PATH="$PATH:/usr/local/go/bin"
-PATH="$PATH:$HOME:.cargo/env"
+PATH="$PATH:$HOME/.cargo/env"
+PATH="$PATH:$HOME/go/bin"
 
 # export PYENV_ROOT="$HOME/.pyenv"
 # [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
