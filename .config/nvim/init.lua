@@ -38,6 +38,8 @@ require("lazy").setup({
   "tpope/vim-fugitive",
   "tpope/vim-rhubarb",
 
+  "tpope/vim-surround",
+
   -- Detect tabstop and shiftwidth automatically
   "tpope/vim-sleuth",
 
@@ -48,12 +50,18 @@ require("lazy").setup({
     "neovim/nvim-lspconfig",
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
-      { "williamboman/mason.nvim", config = true },
+      {
+        "williamboman/mason.nvim",
+        config = true,
+        opts = {
+          ensure_installed = { "gopls", "ruff-lsp", "pyright" },
+        },
+      },
       "williamboman/mason-lspconfig.nvim",
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { "j-hui/fidget.nvim",       opts = {} },
+      { "j-hui/fidget.nvim", opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       "folke/neodev.nvim",
@@ -89,7 +97,7 @@ require("lazy").setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { "folke/which-key.nvim",  opts = {} },
+  { "folke/which-key.nvim", opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     "lewis6991/gitsigns.nvim",
@@ -173,23 +181,23 @@ require("lazy").setup({
   },
 
   {
-    'cameron-wags/rainbow_csv.nvim',
+    "cameron-wags/rainbow_csv.nvim",
     config = true,
     ft = {
-      'csv',
-      'tsv',
-      'csv_semicolon',
-      'csv_whitespace',
-      'csv_pipe',
-      'rfc_csv',
-      'rfc_semicolon'
+      "csv",
+      "tsv",
+      "csv_semicolon",
+      "csv_whitespace",
+      "csv_pipe",
+      "rfc_csv",
+      "rfc_semicolon",
     },
     cmd = {
-      'RainbowDelim',
-      'RainbowDelimSimple',
-      'RainbowDelimQuoted',
-      'RainbowMultiDelim'
-    }
+      "RainbowDelim",
+      "RainbowDelimSimple",
+      "RainbowDelimQuoted",
+      "RainbowMultiDelim",
+    },
   },
 
   -- {
@@ -279,7 +287,7 @@ require("lazy").setup({
     "nvim-treesitter/nvim-treesitter-context",
     opts = {
       multiline_threshold = 3,
-    }
+    },
   },
 
   {
@@ -299,10 +307,10 @@ require("lazy").setup({
     "christoomey/vim-tmux-navigator",
     keys = {
       { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Go to the previous pane" },
-      { "<C-h>",  "<cmd>TmuxNavigateLeft<cr>",     desc = "Got to the left pane" },
-      { "<C-j>",  "<cmd>TmuxNavigateDown<cr>",     desc = "Got to the down pane" },
-      { "<C-k>",  "<cmd>TmuxNavigateUp<cr>",       desc = "Got to the up pane" },
-      { "<C-l>",  "<cmd>TmuxNavigateRight<cr>",    desc = "Got to the right pane" },
+      { "<C-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "Got to the left pane" },
+      { "<C-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Got to the down pane" },
+      { "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Got to the up pane" },
+      { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Got to the right pane" },
     },
   },
 
@@ -313,12 +321,10 @@ require("lazy").setup({
     dependencies = { "zbirenbaum/copilot.lua" },
     config = function()
       vim.defer_fn(function()
-        require("copilot").setup(
-          {
-            suggestion = { enabled = false },
-            panel = { enabled = false },
-          }
-        )                              -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+        require("copilot").setup({
+          suggestion = { enabled = false },
+          panel = { enabled = false },
+        }) -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
         require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
       end, 100)
     end,
@@ -326,12 +332,15 @@ require("lazy").setup({
 
   {
     "nvim-neo-tree/neo-tree.nvim",
+    init = function()
+      -- do nothing
+    end,
     branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
-      "3rd/image.nvim",              -- Optional image support in preview window: See `# Preview Mode` for more information
+      "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
     },
     opts = {
       close_if_last_window = true,
@@ -364,7 +373,7 @@ require("lazy").setup({
       -- your configuration comes here
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
-    }
+    },
   },
 
   {
@@ -385,14 +394,14 @@ require("lazy").setup({
       vim.cmd([[do FileType]])
     end,
   },
-  'godlygeek/tabular',
-  'preservim/vim-markdown',
+  "godlygeek/tabular",
+  "preservim/vim-markdown",
 
   -- Tailwind
   {
     "luckasRanarison/tailwind-tools.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
-    opts = {} -- your configuration
+    opts = {}, -- your configuration
   },
   -- Refactor
   {
@@ -403,6 +412,39 @@ require("lazy").setup({
     },
     config = function()
       require("refactoring").setup()
+    end,
+  },
+
+  -- Formatting
+  {
+    "stevearc/conform.nvim",
+    opts = {},
+    config = function()
+      require("conform").setup({
+        formatters_by_ft = {
+          lua = { "stylua" },
+          svelte = { { "prettierd", "prettier" } },
+          javascript = { { "prettierd", "prettier" } },
+          typescript = { { "prettierd", "prettier" } },
+          javascriptreact = { { "prettierd", "prettier" } },
+          typescriptreact = { { "prettierd", "prettier" } },
+          json = { { "prettierd", "prettier" } },
+          graphql = { { "prettierd", "prettier" } },
+          java = { "google-java-format" },
+          kotlin = { "ktlint" },
+          ruby = { "standardrb" },
+          markdown = { { "prettierd", "prettier" } },
+          erb = { "htmlbeautifier" },
+          html = { "htmlbeautifier" },
+          bash = { "beautysh" },
+          proto = { "buf" },
+          rust = { "rustfmt" },
+          yaml = { "yamlfix" },
+          toml = { "taplo" },
+          css = { { "prettierd", "prettier" } },
+          scss = { { "prettierd", "prettier" } },
+        },
+      })
     end,
   },
 
@@ -527,6 +569,12 @@ require("telescope").setup({
 -- Enable telescope fzf native, if installed
 pcall(require("telescope").load_extension, "fzf")
 
+require("conform").formatters.yamlfix = {
+  env = {
+    YAMLFIX_SEQUENCE_STYLE = "block_style",
+  },
+}
+
 -- Telescope live_grep in git root
 -- Function to find the git root directory based on the current buffer's path
 local function find_git_root()
@@ -584,9 +632,12 @@ vim.keymap.set("n", "<leader>s/", telescope_live_grep_open_files, { desc = "[S]e
 vim.keymap.set("n", "<leader>ss", require("telescope.builtin").builtin, { desc = "[S]earch [S]elect Telescope" })
 vim.keymap.set("n", "<leader>gf", require("telescope.builtin").git_files, { desc = "Search [G]it [F]iles" })
 vim.keymap.set("n", "<leader>gg", ":LazyGit<cr>", { desc = "LazyGit" })
-vim.keymap.set("n", "<leader>sf",
+vim.keymap.set(
+  "n",
+  "<leader>sf",
   "<cmd>lua require'telescope.builtin'.find_files({ find_command = {'rg', '--files', '--hidden', '-g', '!.git' }})<cr>",
-  { desc = "[S]earch [F]iles" })
+  { desc = "[S]earch [F]iles" }
+)
 vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
 vim.keymap.set("n", "<leader>sw", require("telescope.builtin").grep_string, { desc = "[S]earch current [W]ord" })
 vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
@@ -594,6 +645,16 @@ vim.keymap.set("n", "<leader>sG", ":LiveGrepGitRoot<cr>", { desc = "[S]earch by 
 vim.keymap.set("n", "<leader>sd", require("telescope.builtin").diagnostics, { desc = "[S]earch [D]iagnostics" })
 vim.keymap.set("n", "<leader>sr", require("telescope.builtin").resume, { desc = "[S]earch [R]esume" })
 
+-- set <leader>f to format and save
+vim.keymap.set("n", "<leader>f", function()
+  -- vim.lsp.buf.format()
+  require("conform").format({
+    lsp_fallback = true,
+    async = false,
+    timeout_ms = 500,
+  })
+  vim.cmd("w")
+end, { desc = "Format and [F]ormat and [S]ave" })
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
 -- Defer Treesitter setup after first render to improve startup time of 'nvim {filename}'
@@ -628,7 +689,7 @@ vim.defer_fn(function()
     ignore_install = {},
     -- You can specify additional Treesitter modules here: -- For example: -- playground = {--enable = true,-- },
     modules = {},
-    highlight = { enable = true, additional_vim_regex_highlighting = { "markdown" }, },
+    highlight = { enable = true, additional_vim_regex_highlighting = { "markdown" } },
     indent = { enable = true },
     incremental_selection = {
       enable = true,
@@ -734,17 +795,10 @@ local on_attach = function(_, bufnr)
   nmap("<silent>", "<c-h>", ":wincmd h<CR>")
   nmap("<silent>", "<c-l>", ":wincmd l<CR>")
 
-
   -- Create a command `:Format` local to the LSP buffer
   vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
     vim.lsp.buf.format()
   end, { desc = "Format current buffer with LSP" })
-
-  -- set <leader>f to format and save
-  nmap("<leader>f", function()
-    vim.lsp.buf.format()
-    vim.cmd("w")
-  end, "Format and [F]ormat and [S]ave")
 end
 
 -- document existing key chains
@@ -781,13 +835,6 @@ require("mason-lspconfig").setup()
 --  define the property 'filetypes' to the map in question.
 local servers = {
   clangd = {},
-  gopls = {
-    completeUnimported = true,
-    usePlaceholders = true,
-    analyses = {
-      unusedparams = true,
-    },
-  },
   -- pyright = {},
   rust_analyzer = {},
   tsserver = {},
@@ -806,12 +853,52 @@ local servers = {
 }
 
 -- setup Grammarly
-require('lspconfig').grammarly.setup({
-  filetypes = { "markdown", "tex", "text", },
+require("lspconfig").grammarly.setup({
+  filetypes = { "markdown", "tex", "text" },
   -- init_options = {
   --     clientId = "client_"
   -- },
-  init_options = { clientId = 'client_BaDkMgx4X19X9UxxYRCXZo', },
+  init_options = { clientId = "client_BaDkMgx4X19X9UxxYRCXZo" },
+})
+
+require("lspconfig").gopls.setup({
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = { "gopls" },
+  filetypes = { "go", "gomod", "gowork", "gotmpl" },
+  settings = {
+    gopls = {
+      completeUnimported = true,
+      usePlaceholders = true,
+      analyses = {
+        unusedparams = true,
+      },
+    },
+  },
+})
+
+require("lspconfig").ruff_lsp.setup({
+  on_attach = on_attach,
+  init_options = {
+    settings = {
+      -- Any extra CLI arguments for `ruff` go here.
+      args = {},
+    },
+  },
+})
+
+require("lspconfig").pyright.setup({
+  settings = {
+    pyright = {
+      disableOrganizeImports = true, -- Using Ruff
+    },
+    python = {
+      analysis = {
+        ignore = { "*" }, -- Using Ruff
+        typeCheckingMode = "off", -- Using mypy
+      },
+    },
+  },
 })
 
 -- setup templ
