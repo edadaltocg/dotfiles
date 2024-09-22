@@ -175,80 +175,12 @@ require("lazy").setup({
   },
 
   {
-    "yetone/avante.nvim",
-    event = "VeryLazy",
-    lazy = false,
-    version = false, -- set this if you want to always pull the latest change
+    -- Make sure to set this up properly if you have lazy=true
+    "MeanderingProgrammer/render-markdown.nvim",
     opts = {
-      -- add any opts here
-      provider = "openai", -- Recommend using Claude
-      auto_suggestions_provider = "openai", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
-      claude = {
-        endpoint = "https://api.anthropic.com",
-        model = "claude-3-5-sonnet-20240620",
-        temperature = 0,
-        max_tokens = 4096,
-      },
-      openai = {
-        endpoint = "https://api.openai.com/v1",
-        model = "gpt-4o",
-        timeout = 30000, -- Timeout in milliseconds
-        temperature = 0,
-        max_tokens = 4096,
-        ["local"] = false,
-      },
-      openai_mini = {
-        endpoint = "https://api.openai.com/v1",
-        model = "gpt-4o-mini",
-        timeout = 30000, -- Timeout in milliseconds
-        temperature = 0,
-        max_tokens = 4096,
-        ["local"] = false,
-      },
-      behaviour = {
-        auto_suggestions = false, -- Experimental stage
-        auto_set_highlight_group = true,
-        auto_set_keymaps = true,
-        auto_apply_diff_after_generation = false,
-        support_paste_from_clipboard = false,
-      },
+      file_types = { "markdown" },
     },
-    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-    build = "make",
-    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
-    dependencies = {
-      "stevearc/dressing.nvim",
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      --- The below dependencies are optional,
-      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-      "zbirenbaum/copilot.lua", -- for providers='copilot'
-      {
-        -- support for image pasting
-        "HakonHarnes/img-clip.nvim",
-        event = "VeryLazy",
-        opts = {
-          -- recommended settings
-          default = {
-            embed_image_as_base64 = false,
-            prompt_for_file_name = false,
-            drag_and_drop = {
-              insert_mode = true,
-            },
-            -- required for Windows users
-            use_absolute_path = true,
-          },
-        },
-      },
-      {
-        -- Make sure to set this up properly if you have lazy=true
-        "MeanderingProgrammer/render-markdown.nvim",
-        opts = {
-          file_types = { "markdown", "Avante" },
-        },
-        ft = { "markdown", "Avante" },
-      },
-    },
+    ft = { "markdown" },
   },
 
   {
@@ -403,6 +335,7 @@ require("lazy").setup({
   --   end,
   -- },
   --
+  "3rd/image.nvim",
   {
     "nvim-neo-tree/neo-tree.nvim",
     init = function()
@@ -519,6 +452,34 @@ require("lazy").setup({
           scss = { { "prettierd", "prettier" } },
         },
       })
+    end,
+  },
+
+  -- ChatGPT
+  {
+    "robitx/gp.nvim",
+    config = function()
+      local conf = {
+        -- For customization, refer to Install > Configuration in the Documentation/Readme
+        providers = {
+          -- secrets can be strings or tables with command and arguments
+          -- secret = { "cat", "path_to/openai_api_key" },
+          -- secret = { "bw", "get", "password", "OPENAI_API_KEY" },
+          -- secret : "sk-...",
+          -- secret = os.getenv("env_name.."),
+          openai = {
+            disable = false,
+            endpoint = "https://api.openai.com/v1/chat/completions",
+            secret = {
+              "cat ~/.credentials/openai'",
+            },
+            -- secret = { "cat", "~/.credentials/openai" },
+          },
+        },
+      }
+      require("gp").setup(conf)
+
+      -- Setup shortcuts here (see Usage > Shortcuts in the Documentation/Readme)
     end,
   },
 
@@ -875,6 +836,84 @@ local on_attach = function(_, bufnr)
   end, { desc = "Format current buffer with LSP" })
 end
 
+local function keymapOptions(desc)
+  return {
+    noremap = true,
+    silent = true,
+    nowait = true,
+    desc = "GPT" .. desc,
+  }
+end
+
+-- Chat commands
+vim.keymap.set({ "n" }, "<leader>ac", "<cmd>gpchatnew<cr>", keymapOptions("new chat"))
+vim.keymap.set({ "n" }, "<leader>at", "<cmd>GpChatToggle<cr>", keymapOptions("Toggle Chat"))
+vim.keymap.set({ "n" }, "<leader>af", "<cmd>GpChatFinder<cr>", keymapOptions("Chat Finder"))
+
+vim.keymap.set("v", "<leader>ac", ":<C-u>'<,'>GpChatNew<cr>", keymapOptions("Visual Chat New"))
+vim.keymap.set("v", "<leader>ap", ":<C-u>'<,'>GpChatPaste<cr>", keymapOptions("Visual Chat Paste"))
+vim.keymap.set("v", "<leader>at", ":<C-u>'<,'>GpChatToggle<cr>", keymapOptions("Visual Toggle Chat"))
+
+vim.keymap.set({ "n" }, "<leader>ah", "<cmd>GpChatNew split<cr>", keymapOptions("New Chat split"))
+vim.keymap.set({ "n" }, "<leader>av", "<cmd>GpChatNew vsplit<cr>", keymapOptions("New Chat vsplit"))
+-- vim.keymap.set({ "n" }, "<leader>a<C-t>", "<cmd>GpChatNew tabnew<cr>", keymapOptions("New Chat tabnew"))
+
+vim.keymap.set("v", "<leader>ah", ":<C-u>'<,'>GpChatNew split<cr>", keymapOptions("Visual Chat New split"))
+vim.keymap.set("v", "<leader>av", ":<C-u>'<,'>GpChatNew vsplit<cr>", keymapOptions("Visual Chat New vsplit"))
+-- vim.keymap.set("v", "<leader>a<C-t>", ":<C-u>'<,'>GpChatNew tabnew<cr>", keymapOptions("Visual Chat New tabnew"))
+
+-- Prompt commands
+vim.keymap.set({ "n" }, "<leader>ar", "<cmd>GpRewrite<cr>", keymapOptions("Inline Rewrite"))
+vim.keymap.set({ "n" }, "<leader>aa", "<cmd>GpAppend<cr>", keymapOptions("Append (after)"))
+vim.keymap.set({ "n" }, "<leader>ab", "<cmd>GpPrepend<cr>", keymapOptions("Prepend (before)"))
+
+vim.keymap.set("v", "<leader>ar", ":<C-u>'<,'>GpRewrite<cr>", keymapOptions("Visual Rewrite"))
+vim.keymap.set("v", "<leader>aa", ":<C-u>'<,'>GpAppend<cr>", keymapOptions("Visual Append (after)"))
+vim.keymap.set("v", "<leader>ab", ":<C-u>'<,'>GpPrepend<cr>", keymapOptions("Visual Prepend (before)"))
+vim.keymap.set("v", "<leader>ai", ":<C-u>'<,'>GpImplement<cr>", keymapOptions("Implement selection"))
+
+vim.keymap.set({ "n" }, "<leader>ap", "<cmd>GpPopup<cr>", keymapOptions("Popup"))
+-- vim.keymap.set({ "n" }, "<leader>age", "<cmd>GpEnew<cr>", keymapOptions("GpEnew"))
+-- vim.keymap.set({ "n" }, "<leader>agn", "<cmd>GpNew<cr>", keymapOptions("GpNew"))
+-- vim.keymap.set({ "n" }, "<leader>agv", "<cmd>GpVnew<cr>", keymapOptions("GpVnew"))
+-- vim.keymap.set({ "n" }, "<leader>agt", "<cmd>GpTabnew<cr>", keymapOptions("GpTabnew"))
+
+vim.keymap.set("v", "<leader>ap", ":<C-u>'<,'>GpPopup<cr>", keymapOptions("Visual Popup"))
+-- vim.keymap.set("v", "<leader>age", ":<C-u>'<,'>GpEnew<cr>", keymapOptions("Visual GpEnew"))
+-- vim.keymap.set("v", "<leader>agn", ":<C-u>'<,'>GpNew<cr>", keymapOptions("Visual GpNew"))
+-- vim.keymap.set("v", "<leader>agv", ":<C-u>'<,'>GpVnew<cr>", keymapOptions("Visual GpVnew"))
+-- vim.keymap.set("v", "<leader>agt", ":<C-u>'<,'>GpTabnew<cr>", keymapOptions("Visual GpTabnew"))
+
+vim.keymap.set({ "n" }, "<leader>ax", "<cmd>GpContext<cr>", keymapOptions("Toggle Context"))
+vim.keymap.set("v", "<leader>ax", ":<C-u>'<,'>GpContext<cr>", keymapOptions("Visual Toggle Context"))
+
+vim.keymap.set({ "n", "v", "x" }, "<leader>as", "<cmd>GpStop<cr>", keymapOptions("Stop"))
+vim.keymap.set({ "n", "v", "x" }, "<leader>an", "<cmd>GpNextAgent<cr>", keymapOptions("Next Agent"))
+
+-- optional Whisper commands with prefix <leader>aw
+vim.keymap.set({ "n" }, "<leader>aww", "<cmd>GpWhisper<cr>", keymapOptions("Whisper"))
+vim.keymap.set("v", "<leader>aww", ":<C-u>'<,'>GpWhisper<cr>", keymapOptions("Visual Whisper"))
+
+vim.keymap.set({ "n" }, "<leader>awr", "<cmd>GpWhisperRewrite<cr>", keymapOptions("Whisper Inline Rewrite"))
+vim.keymap.set({ "n" }, "<leader>awa", "<cmd>GpWhisperAppend<cr>", keymapOptions("Whisper Append (after)"))
+vim.keymap.set({ "n" }, "<leader>awb", "<cmd>GpWhisperPrepend<cr>", keymapOptions("Whisper Prepend (before) "))
+
+vim.keymap.set("v", "<leader>awr", ":<C-u>'<,'>GpWhisperRewrite<cr>", keymapOptions("Visual Whisper Rewrite"))
+vim.keymap.set("v", "<leader>awa", ":<C-u>'<,'>GpWhisperAppend<cr>", keymapOptions("Visual Whisper Append (after)"))
+vim.keymap.set("v", "<leader>awb", ":<C-u>'<,'>GpWhisperPrepend<cr>", keymapOptions("Visual Whisper Prepend (before)"))
+
+vim.keymap.set({ "n" }, "<leader>awp", "<cmd>GpWhisperPopup<cr>", keymapOptions("Whisper Popup"))
+vim.keymap.set({ "n" }, "<leader>awe", "<cmd>GpWhisperEnew<cr>", keymapOptions("Whisper Enew"))
+vim.keymap.set({ "n" }, "<leader>awn", "<cmd>GpWhisperNew<cr>", keymapOptions("Whisper New"))
+vim.keymap.set({ "n" }, "<leader>awv", "<cmd>GpWhisperVnew<cr>", keymapOptions("Whisper Vnew"))
+vim.keymap.set({ "n" }, "<leader>awt", "<cmd>GpWhisperTabnew<cr>", keymapOptions("Whisper Tabnew"))
+
+vim.keymap.set("v", "<leader>awp", ":<C-u>'<,'>GpWhisperPopup<cr>", keymapOptions("Visual Whisper Popup"))
+vim.keymap.set("v", "<leader>awe", ":<C-u>'<,'>GpWhisperEnew<cr>", keymapOptions("Visual Whisper Enew"))
+vim.keymap.set("v", "<leader>awn", ":<C-u>'<,'>GpWhisperNew<cr>", keymapOptions("Visual Whisper New"))
+vim.keymap.set("v", "<leader>awv", ":<C-u>'<,'>GpWhisperVnew<cr>", keymapOptions("Visual Whisper Vnew"))
+vim.keymap.set("v", "<leader>awt", ":<C-u>'<,'>GpWhisperTabnew<cr>", keymapOptions("Visual Whisper Tabnew"))
+
 -- document existing key chains
 require("which-key").register({
   ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
@@ -886,6 +925,7 @@ require("which-key").register({
   ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
   ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
   ["<leader>m"] = { name = "[M]arkdown", _ = "which_key_ignore" },
+  ["<leader>a"] = { name = "[C]hatGPT", _ = "which_key_ignore" },
 })
 -- register which-key VISUAL mode
 -- required for visual <leader>hs (hunk stage) to work
@@ -908,9 +948,9 @@ require("mason-lspconfig").setup()
 --  If you want to override the default filetypes that your language server will attach to you can
 --  define the property 'filetypes' to the map in question.
 local servers = {
-  clangd = {},
-  -- pyright = {},
   rust_analyzer = {},
+  -- pyright = {},
+  clangd = {},
   tsserver = {},
   html = { filetypes = { "html", "twig", "hbs", "templ" } },
   templ = {},
