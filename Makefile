@@ -1,5 +1,5 @@
 install:
-	stow --ignore=Makefile -t ~/ .
+	stow -t ~/ .
 
 uninstall:
-	stow --ignore=Makefile -D -t ~/ .
+	stow -D -t ~/ .
