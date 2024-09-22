@@ -1,3 +1,0 @@
-return {
-  "dbinagi/nomodoro",
-}
