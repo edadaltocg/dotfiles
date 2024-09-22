@@ -435,6 +435,7 @@ require("lazy").setup({
             "thumbs.db",
           },
         },
+        use_libuv_file_watcher = true,
       },
     },
   },
