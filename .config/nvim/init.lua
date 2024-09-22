@@ -172,81 +172,81 @@ require("lazy").setup({
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "select git hunk" })
       end,
     },
+  },
 
-    {
-      "yetone/avante.nvim",
-      event = "VeryLazy",
-      lazy = false,
-      version = false, -- set this if you want to always pull the latest change
-      opts = {
-        -- add any opts here
-        provider = "openai", -- Recommend using Claude
-        auto_suggestions_provider = "openai", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
-        claude = {
-          endpoint = "https://api.anthropic.com",
-          model = "claude-3-5-sonnet-20240620",
-          temperature = 0,
-          max_tokens = 4096,
-        },
-        openai = {
-          endpoint = "https://api.openai.com/v1",
-          model = "gpt-4o",
-          timeout = 30000, -- Timeout in milliseconds
-          temperature = 0,
-          max_tokens = 4096,
-          ["local"] = false,
-        },
-        openai_mini = {
-          endpoint = "https://api.openai.com/v1",
-          model = "gpt-4o-mini",
-          timeout = 30000, -- Timeout in milliseconds
-          temperature = 0,
-          max_tokens = 4096,
-          ["local"] = false,
-        },
-        behaviour = {
-          auto_suggestions = false, -- Experimental stage
-          auto_set_highlight_group = true,
-          auto_set_keymaps = true,
-          auto_apply_diff_after_generation = false,
-          support_paste_from_clipboard = false,
+  {
+    "yetone/avante.nvim",
+    event = "VeryLazy",
+    lazy = false,
+    version = false, -- set this if you want to always pull the latest change
+    opts = {
+      -- add any opts here
+      provider = "openai", -- Recommend using Claude
+      auto_suggestions_provider = "openai", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
+      claude = {
+        endpoint = "https://api.anthropic.com",
+        model = "claude-3-5-sonnet-20240620",
+        temperature = 0,
+        max_tokens = 4096,
+      },
+      openai = {
+        endpoint = "https://api.openai.com/v1",
+        model = "gpt-4o",
+        timeout = 30000, -- Timeout in milliseconds
+        temperature = 0,
+        max_tokens = 4096,
+        ["local"] = false,
+      },
+      openai_mini = {
+        endpoint = "https://api.openai.com/v1",
+        model = "gpt-4o-mini",
+        timeout = 30000, -- Timeout in milliseconds
+        temperature = 0,
+        max_tokens = 4096,
+        ["local"] = false,
+      },
+      behaviour = {
+        auto_suggestions = false, -- Experimental stage
+        auto_set_highlight_group = true,
+        auto_set_keymaps = true,
+        auto_apply_diff_after_generation = false,
+        support_paste_from_clipboard = false,
+      },
+    },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = "make",
+    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+    dependencies = {
+      "stevearc/dressing.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      --- The below dependencies are optional,
+      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+      "zbirenbaum/copilot.lua", -- for providers='copilot'
+      {
+        -- support for image pasting
+        "HakonHarnes/img-clip.nvim",
+        event = "VeryLazy",
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            use_absolute_path = true,
+          },
         },
       },
-      -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-      build = "make",
-      -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
-      dependencies = {
-        "stevearc/dressing.nvim",
-        "nvim-lua/plenary.nvim",
-        "MunifTanjim/nui.nvim",
-        --- The below dependencies are optional,
-        "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-        "zbirenbaum/copilot.lua", -- for providers='copilot'
-        {
-          -- support for image pasting
-          "HakonHarnes/img-clip.nvim",
-          event = "VeryLazy",
-          opts = {
-            -- recommended settings
-            default = {
-              embed_image_as_base64 = false,
-              prompt_for_file_name = false,
-              drag_and_drop = {
-                insert_mode = true,
-              },
-              -- required for Windows users
-              use_absolute_path = true,
-            },
-          },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        "MeanderingProgrammer/render-markdown.nvim",
+        opts = {
+          file_types = { "markdown", "Avante" },
         },
-        {
-          -- Make sure to set this up properly if you have lazy=true
-          "MeanderingProgrammer/render-markdown.nvim",
-          opts = {
-            file_types = { "markdown", "Avante" },
-          },
-          ft = { "markdown", "Avante" },
-        },
+        ft = { "markdown", "Avante" },
       },
     },
   },
@@ -278,31 +278,17 @@ require("lazy").setup({
     },
   },
 
-  -- {
-  --   -- Theme inspired by Atom
-  --   "navarasu/onedark.nvim",
-  --   priority = 1000,
-  --   lazy = false,
-  --   config = function()
-  --     require("onedark").setup({
-  --       -- Set a style preset. 'dark' is default.
-  --       style = "dark", -- dark, darker, cool, deep, warm, warmer, light
-  --     })
-  --     require("onedark").load()
-  --   end,
-  -- },
-
   {
     "projekt0n/github-nvim-theme",
     priority = 1000,
     lazy = false,
     config = function()
-      require("github-theme").setup({
-        themeStyle = "dimmed",
-        darkSidebar = true,
-      })
+      -- require("github-theme").setup({
+      --   themeStyle = "dimmed",
+      --   darkSidebar = true,
+      -- })
       require("github-theme").load()
-      vim.cmd("colorscheme github_dark_dimmed")
+      vim.cmd("colorscheme github_dark_default")
     end,
   },
 
@@ -312,10 +298,19 @@ require("lazy").setup({
     -- See `:help lualine.txt`
     opts = {
       options = {
-        icons_enabled = false,
+        icons_enabled = true,
         theme = "auto",
         component_separators = "|",
         section_separators = "",
+      },
+      sections = {
+        lualine_c = {
+          {
+            "filename",
+            file_status = true, -- displays file status (readonly status, modified status)
+            path = 1, -- 0 = just filename, 1 = relative path, 2 = absolute path
+          },
+        },
       },
     },
   },
@@ -929,15 +924,6 @@ local servers = {
     },
   },
 }
-
--- setup Grammarly
-require("lspconfig").grammarly.setup({
-  filetypes = { "markdown", "tex", "text" },
-  -- init_options = {
-  --     clientId = "client_"
-  -- },
-  init_options = { clientId = "client_BaDkMgx4X19X9UxxYRCXZo" },
-})
 
 require("lspconfig").gopls.setup({
   on_attach = on_attach,
