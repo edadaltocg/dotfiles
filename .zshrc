@@ -268,3 +268,5 @@ setopt hist_verify
 # completion using arrow keys (based on history)
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
+
+export OPENAI_API_KEY=$(cat ~/.credentials/openai)

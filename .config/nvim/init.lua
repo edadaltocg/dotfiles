@@ -455,7 +455,7 @@ require("lazy").setup({
     end,
   },
 
-  -- ChatGPT
+  -- ChatGPT (Gp)
   {
     "robitx/gp.nvim",
     config = function()
@@ -470,12 +470,15 @@ require("lazy").setup({
           openai = {
             disable = false,
             endpoint = "https://api.openai.com/v1/chat/completions",
-            secret = {
-              "cat ~/.credentials/openai'",
-            },
+            secre = os.getenv("OPENAI_API_KEY"),
+            -- secret = {
+            --   "cat ~/.credentials/openai'",
+            -- },
             -- secret = { "cat", "~/.credentials/openai" },
           },
         },
+        -- chat_shortcut_respond = { modes = { "n", "i", "v", "x" }, shortcut = "<C-g><C-g>" },
+        chat_shortcut_respond = { modes = { "n" }, shortcut = "<CR>" },
       }
       require("gp").setup(conf)
 
@@ -799,6 +802,8 @@ local on_attach = function(_, bufnr)
     vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
   end
 
+  vim.api.nvim_set_keymap("v", "y", "ygv<Esc>", { noremap = true, silent = true })
+
   nmap("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
   nmap("<leader>ca", function()
     vim.lsp.buf.code_action({ context = { only = { "quickfix", "refactor", "source" } } })
@@ -846,7 +851,7 @@ local function keymapOptions(desc)
 end
 
 -- Chat commands
-vim.keymap.set({ "n" }, "<leader>ac", "<cmd>gpchatnew<cr>", keymapOptions("new chat"))
+vim.keymap.set({ "n" }, "<leader>ac", "<cmd>GpChatNew<cr>", keymapOptions("new chat"))
 vim.keymap.set({ "n" }, "<leader>at", "<cmd>GpChatToggle<cr>", keymapOptions("Toggle Chat"))
 vim.keymap.set({ "n" }, "<leader>af", "<cmd>GpChatFinder<cr>", keymapOptions("Chat Finder"))
 
