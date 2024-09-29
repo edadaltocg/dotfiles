@@ -249,13 +249,9 @@ export HISTFILE=~/.zsh_history
 
 # ---- Eza (better ls) -----
 
-alias ls="eza --icons=always"
-
-# ---- TheFuck -----
-
-# thefuck alias
-eval $(thefuck --alias)
-eval $(thefuck --alias fk)
+if command -v eza > /dev/null 2>&1; then
+  alias ls="eza --icons=always"
+fi
 
 # Manage history
 SAVEHIST=1000

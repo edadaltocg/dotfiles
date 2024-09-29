@@ -1,3 +1,6 @@
 .DS_Store
 __pycache__/
 .gp.md
+.config/packer
+.config/stripe
+.config/gh
