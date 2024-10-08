@@ -8,6 +8,8 @@
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+local python_path = vim.fn.exepath("python3")
+vim.g.python3_host_prog = python_path
 
 -- -- suggest me something:
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -96,6 +98,24 @@ require("lazy").setup({
       "rafamadriz/friendly-snippets",
     },
   },
+
+  -- { "dccsillag/magma-nvim" },
+
+  { "Vigemus/iron.nvim" },
+
+  { "RRethy/vim-illuminate" },
+
+  {
+    "windwp/nvim-ts-autotag",
+    -- opts = {
+    --   -- Defaults
+    --   enable_close = true, -- Auto close tags
+    --   enable_rename = true, -- Auto rename pairs of tags
+    --   enable_close_on_slash = false, -- Auto close on trailing </
+    -- },
+  },
+
+  { "brenoprata10/nvim-highlight-colors" },
 
   -- Useful plugin to show you pending keybinds.
   { "folke/which-key.nvim", opts = {} },
@@ -191,6 +211,11 @@ require("lazy").setup({
   },
 
   {
+    "NoahTheDuke/vim-just",
+    ft = { "just" },
+  },
+
+  {
     "cameron-wags/rainbow_csv.nvim",
     config = true,
     ft = {
@@ -278,6 +303,9 @@ require("lazy").setup({
         end,
       },
     },
+    opts = {
+      sort_lastused = true,
+    },
   },
 
   {
@@ -335,18 +363,55 @@ require("lazy").setup({
   --   end,
   -- },
   --
-  "3rd/image.nvim",
+  {
+    "3rd/image.nvim",
+    config = function()
+      -- ...
+    end,
+  },
+
+  {
+    "adelarsq/image_preview.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("image_preview").setup()
+    end,
+  },
+
+  {
+    "nvim-telescope/telescope-media-files.nvim",
+    config = function()
+      require("telescope").load_extension("media_files")
+    end,
+  },
+
   {
     "nvim-neo-tree/neo-tree.nvim",
-    init = function()
-      -- do nothing
-    end,
     branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
       "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
+      {
+        "s1n7ax/nvim-window-picker",
+        version = "2.*",
+        config = function()
+          require("window-picker").setup({
+            filter_rules = {
+              include_current_win = false,
+              autoselect_one = true,
+              -- filter using buffer options
+              bo = {
+                -- if the file type is one of following, the window will be ignored
+                filetype = { "neo-tree", "neo-tree-popup", "notify" },
+                -- if the buffer type is one of following, the window will be ignored
+                buftype = { "terminal", "quickfix" },
+              },
+            },
+          })
+        end,
+      },
     },
     opts = {
       close_if_last_window = true,
@@ -470,11 +535,65 @@ require("lazy").setup({
           openai = {
             disable = false,
             endpoint = "https://api.openai.com/v1/chat/completions",
-            secre = os.getenv("OPENAI_API_KEY"),
+            secret = os.getenv("OPENAI_API_KEY"),
             -- secret = {
             --   "cat ~/.credentials/openai'",
             -- },
             -- secret = { "cat", "~/.credentials/openai" },
+          },
+        },
+        agents = {
+          {
+            name = "ExampleDisabledAgent",
+            disable = true,
+          },
+          {
+            name = "ChatGPT4o-meta",
+            chat = true,
+            command = false,
+            -- string with model name or table with model name and parameters
+            model = { model = "gpt-4o", temperature = 1.1, top_p = 1 },
+            -- system prompt (use this to specify the persona/role of the AI)
+            system_prompt = [[Understand the Task: Grasp the main objective, goals, requirements, constraints, and expected output.
+- Minimal Changes: If an existing prompt is provided, improve it only if it's simple. For complex prompts, enhance clarity and add missing elements without altering the original structure.
+- Reasoning Before Conclusions: Encourage reasoning steps before any conclusions are reached. ATTENTION! If the user provides examples where the reasoning happens afterward, REVERSE the order! NEVER START EXAMPLES WITH CONCLUSIONS!
+    - Reasoning Order: Call out reasoning portions of the prompt and conclusion parts (specific fields by name). For each, determine the ORDER in which this is done, and whether it needs to be reversed.
+    - Conclusion, classifications, or results should ALWAYS appear last.
+- Examples: Include high-quality examples if helpful, using placeholders [in brackets] for complex elements.
+   - What kinds of examples may need to be included, how many, and whether they are complex enough to benefit from placeholders.
+- Clarity and Conciseness: Use clear, specific language. Avoid unnecessary instructions or bland statements.
+- Formatting: Use markdown features for readability. DO NOT USE ``` CODE BLOCKS UNLESS SPECIFICALLY REQUESTED.
+- Preserve User Content: If the input task or prompt includes extensive guidelines or examples, preserve them entirely, or as closely as possible. If they are vague, consider breaking down into sub-steps. Keep any details, guidelines, examples, variables, or placeholders provided by the user.
+- Constants: DO include constants in the prompt, as they are not susceptible to prompt injection. Such as guides, rubrics, and examples.
+- Output Format: Explicitly the most appropriate output format, in detail. This should include length and syntax (e.g. short sentence, paragraph, JSON, etc.)
+    - For tasks outputting well-defined or structured data (classification, JSON, etc.) bias toward outputting a JSON.
+    - JSON should never be wrapped in code blocks (```) unless explicitly requested.
+
+The final prompt you output should adhere to the following structure below. Do not include any additional commentary, only output the completed system prompt. SPECIFICALLY, do not include any additional messages at the start or end of the prompt. (e.g. no "---")
+
+[Concise instruction describing the task - this should be the first line in the prompt, no section header]
+
+[Additional details as needed.]
+
+[Optional sections with headings or bullet points for detailed steps.]
+
+# Steps [optional]
+
+[optional: a detailed breakdown of the steps necessary to accomplish the task]
+
+# Output Format
+
+[Specifically call out how the output should be formatted, be it response length, structure e.g. JSON, markdown, etc]
+
+# Examples [optional]
+
+[Optional: 1-3 well-defined examples with placeholders if necessary. Clearly mark where examples start and end, and what the input and output are. User placeholders as necessary.]
+[If the examples are shorter than what a realistic example is expected to be, make a reference with () explaining how real examples should be longer / shorter / different. AND USE PLACEHOLDERS! ]
+
+# Notes [optional]
+
+[optional: edge cases, details, and an area to call or repeat out specific important considerations]
+]],
           },
         },
         -- chat_shortcut_respond = { modes = { "n", "i", "v", "x" }, shortcut = "<C-g><C-g>" },
@@ -553,6 +672,7 @@ vim.o.completeopt = "menuone,noselect"
 
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
+require("nvim-highlight-colors").setup({})
 
 -- [[ Basic Keymaps ]]
 
@@ -572,7 +692,7 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagn
 
 -- Git keymaps
 --Custo keymaps
-vim.keymap.set("n", "<leader><tab>", "<C-^>", { desc = "Jump to previous buffer" })
+-- vim.keymap.set("n", "<leader><tab>", "<C-^>", { desc = "Jump to previous buffer" })
 vim.keymap.set("n", "<leader>n", "<cmd>Neotree toggle<cr>", { desc = "Toggle Neotree" })
 
 -- [[ Highlight on yank ]]
@@ -650,8 +770,13 @@ end
 vim.api.nvim_create_user_command("LiveGrepGitRoot", live_grep_git_root, {})
 
 -- See `:help telescope.builtin`
-vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
-vim.keymap.set("n", "<leader><space>", require("telescope.builtin").buffers, { desc = "[ ] Find existing buffers" })
+vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc = "[ ] Find recently opened files" })
+vim.keymap.set(
+  "n",
+  "<leader><tab>",
+  "<cmd>lua require('telescope.builtin').buffers()<CR>",
+  { desc = "[ ] Find existing buffers" }
+)
 vim.keymap.set("n", "<leader>/", function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require("telescope.builtin").current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
@@ -1091,6 +1216,61 @@ cmp.setup({
     { name = "path" },
   },
 })
+
+-- Map <leader>b to close all other buffers
+vim.keymap.set("n", "<leader>b", ":%bd|e#|bd#<CR>", { desc = "close all other buffers" })
+
+local actions = require("telescope.actions")
+require("telescope").setup({
+  pickers = {
+    buffers = {
+      sort_lastused = true,
+    },
+  },
+})
+
+require("telescope").load_extension("media_files")
+
+local iron = require("iron.core")
+
+iron.setup({
+  config = {
+    -- Whether a repl should be discarded or not
+    scratch_repl = true,
+    -- Your repl definitions come here
+    repl_definition = {
+      sh = {
+        -- Can be a table or a function that
+        -- returns a table (see below)
+        command = { "zsh" },
+      },
+      python = {
+        command = { "python3" }, -- or { "ipython", "--no-autoindent" }
+        format = require("iron.fts.common").bracketed_paste_python,
+      },
+    },
+    -- How the repl window will be displayed
+    -- See below for more information
+    repl_open_cmd = "vertical botright 80 split", --require("iron.view").bottom(40),
+  },
+  -- Iron doesn't set keymaps by default anymore.
+  -- You can set them here or manually add keymaps to the functions in iron.core
+  keymaps = {
+    visual_send = "<leader>zz",
+    send_file = "<leader>zf",
+    send_line = "<leader>zl",
+    interrupt = "<leader>zs",
+  },
+  -- If the highlight is on, you can change how it looks
+  -- For the available options, check nvim_set_hl
+  highlight = {
+    italic = true,
+  },
+  ignore_blank_lines = true, -- ignore blank lines when sending visual select lines
+})
+
+-- iron also has a list of commands, see :h iron-commands for all available commands
+vim.keymap.set("n", "<leader>zo", "<cmd>IronRepl<cr>")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
