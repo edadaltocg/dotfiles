@@ -117,6 +117,13 @@ require("lazy").setup({
 
   { "brenoprata10/nvim-highlight-colors" },
 
+  {
+    "jpalardy/vim-slime",
+    init = function()
+      vim.g.slime_target = "tmux"
+    end,
+  },
+
   -- Useful plugin to show you pending keybinds.
   { "folke/which-key.nvim", opts = {} },
   {
@@ -554,9 +561,13 @@ require("lazy").setup({
             -- string with model name or table with model name and parameters
             model = { model = "gpt-4o", temperature = 1.1, top_p = 1 },
             -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt = [[Understand the Task: Grasp the main objective, goals, requirements, constraints, and expected output.
+            system_prompt = [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
+
+# Guidelines
+
+- Understand the Task: Grasp the main objective, goals, requirements, constraints, and expected output.
 - Minimal Changes: If an existing prompt is provided, improve it only if it's simple. For complex prompts, enhance clarity and add missing elements without altering the original structure.
-- Reasoning Before Conclusions: Encourage reasoning steps before any conclusions are reached. ATTENTION! If the user provides examples where the reasoning happens afterward, REVERSE the order! NEVER START EXAMPLES WITH CONCLUSIONS!
+- Reasoning Before Conclusions**: Encourage reasoning steps before any conclusions are reached. ATTENTION! If the user provides examples where the reasoning happens afterward, REVERSE the order! NEVER START EXAMPLES WITH CONCLUSIONS!
     - Reasoning Order: Call out reasoning portions of the prompt and conclusion parts (specific fields by name). For each, determine the ORDER in which this is done, and whether it needs to be reversed.
     - Conclusion, classifications, or results should ALWAYS appear last.
 - Examples: Include high-quality examples if helpful, using placeholders [in brackets] for complex elements.
@@ -592,8 +603,7 @@ The final prompt you output should adhere to the following structure below. Do n
 
 # Notes [optional]
 
-[optional: edge cases, details, and an area to call or repeat out specific important considerations]
-]],
+[optional: edge cases, details, and an area to call or repeat out specific important considerations] ]],
           },
         },
         -- chat_shortcut_respond = { modes = { "n", "i", "v", "x" }, shortcut = "<C-g><C-g>" },
@@ -1248,6 +1258,12 @@ iron.setup({
         command = { "python3" }, -- or { "ipython", "--no-autoindent" }
         format = require("iron.fts.common").bracketed_paste_python,
       },
+      example = {
+        command = function(meta)
+          local filename = vim.api.nvim_buf_get_name(meta.current_bufnr)
+          return { "cabal", "v2-repl", filename }
+        end,
+      },
     },
     -- How the repl window will be displayed
     -- See below for more information
@@ -1271,6 +1287,7 @@ iron.setup({
 
 -- iron also has a list of commands, see :h iron-commands for all available commands
 vim.keymap.set("n", "<leader>zo", "<cmd>IronRepl<cr>")
+vim.keymap.set("n", "<leader>zr", "<cmd>IronRestart<cr>")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

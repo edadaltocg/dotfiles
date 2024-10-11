@@ -4,3 +4,8 @@ __pycache__/
 .config/packer
 .config/stripe
 .config/gh
+.zshenv
+rclone
+gh
+.ipynb_checkpoints
+examples/

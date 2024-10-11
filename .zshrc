@@ -265,11 +265,6 @@ setopt hist_verify
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
-export OPENAI_API_KEY=$(cat ~/.credentials/openai)
-export RUNPOD_API_KEY=$(cat ~/.credentials/runpod)
-export DYLD_LIBRARY_PATH="$(brew --prefix)/lib:$DYLD_LIBRARY_PATH"
-
 export PYTHON_INTERPRETER="$(uv python find --system)"
 alias python="$PYTHON_INTERPRETER"
 export PATH="$(dirname $PYTHON_INTERPRETER):$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
