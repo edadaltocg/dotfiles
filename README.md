@@ -77,3 +77,5 @@ stow
 - Before 9/20/2014: Alacritty, tmux, zsh (oh-my-zsh), neovim
 
 * 9/21/2024: Investigating wezterm. Builtin show image capabilities, config in lua.
+
+* 11/25/2024: Integrated aerospace window tiling to the mix.
