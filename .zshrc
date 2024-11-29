@@ -266,5 +266,5 @@ bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
 export PYTHON_INTERPRETER="$(uv python find --system)"
-alias python="$PYTHON_INTERPRETER"
+# alias python="$PYTHON_INTERPRETER"
 export PATH="$(dirname $PYTHON_INTERPRETER):$PATH"

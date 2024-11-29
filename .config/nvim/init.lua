@@ -10,6 +10,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 local python_path = vim.fn.exepath("python3")
 vim.g.python3_host_prog = python_path
+vim.g.editorconfig = true
 
 -- -- suggest me something:
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -323,12 +324,12 @@ require("lazy").setup({
     },
     build = ":TSUpdate",
   },
-  {
-    "nvim-treesitter/nvim-treesitter-context",
-    opts = {
-      multiline_threshold = 3,
-    },
-  },
+  -- {
+  --   "nvim-treesitter/nvim-treesitter-context",
+  --   opts = {
+  --     multiline_threshold = 3,
+  --   },
+  -- },
 
   {
     "windwp/nvim-autopairs",
