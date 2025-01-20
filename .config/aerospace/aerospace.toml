@@ -132,7 +132,7 @@ alt-f = 'workspace F'
 # alt-g = 'workspace G'
 # alt-i = 'workspace I'
 # alt-m = 'workspace M'
-# alt-n = 'workspace N'
+alt-n = 'workspace N'
 # alt-o = 'workspace O'
 alt-p = 'workspace P'
 # alt-q = 'workspace Q'
@@ -140,7 +140,7 @@ alt-p = 'workspace P'
 alt-s = 'workspace S'
 alt-t = 'workspace T'
 # alt-u = 'workspace U'
-# alt-v = 'workspace V'
+alt-v = 'workspace V'
 # alt-w = 'workspace W'
 # alt-x = 'workspace X'
 # alt-y = 'workspace Y'
@@ -221,35 +221,23 @@ run = "move-node-to-workspace T"
 # Move browser to workspace B
 [[on-window-detected]]
 
-# 609 | com.google.Chrome      | Google Chrome
-# 613 | com.github.wez.wezterm | WezTerm
-# 615 | com.xkoji.altair       | Altair GraphQL Client
-# 617 | com.spotify.client     | Spotify
-# 623 | com.microsoft.VSCode   | Code
-# 628 | com.apple.finder       | Finder
 if.app-id = 'com.google.Chrome'
 run = "move-node-to-workspace B"
 
 # Move Finder to workspace F
 [[on-window-detected]]
 
-# 609 | com.google.Chrome      | Google Chrome
-# 613 | com.github.wez.wezterm | WezTerm
-# 615 | com.xkoji.altair       | Altair GraphQL Client
-# 617 | com.spotify.client     | Spotify
-# 623 | com.microsoft.VSCode   | Code
-# 628 | com.apple.finder       | Finder
 if.app-id = 'com.apple.finder'
 run = "move-node-to-workspace F"
 
 # Move Spotify to workspace S
 [[on-window-detected]]
 
-# 609 | com.google.Chrome      | Google Chrome
-# 613 | com.github.wez.wezterm | WezTerm
-# 615 | com.xkoji.altair       | Altair GraphQL Client
-# 617 | com.spotify.client     | Spotify
-# 623 | com.microsoft.VSCode   | Code
-# 628 | com.apple.finder       | Finder
 if.app-id = 'com.spotify.client'
 run = "move-node-to-workspace S"
+
+# Move VSCode to workspace V
+[[on-window-detected]]
+
+if.app-id = 'com.microsoft.VSCode'
+run = "move-node-to-workspace V"

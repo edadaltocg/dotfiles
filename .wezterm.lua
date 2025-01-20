@@ -7,6 +7,9 @@ config.font_size = 15
 config.enable_tab_bar = false
 -- config.window_decorations = "RESIZE"
 
+config.enable_kitty_graphics = true
+config.term = "xterm-kitty"
+
 config.colors = {
   -- cursor_bg = "#47FF9C",
   -- cursor_border = "#47FF9C",

@@ -12,6 +12,8 @@ local python_path = vim.fn.exepath("python3")
 vim.g.python3_host_prog = python_path
 vim.g.editorconfig = true
 
+vim.api.nvim_set_keymap("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true })
+
 -- -- suggest me something:
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
@@ -37,6 +39,19 @@ vim.opt.rtp:prepend(lazypath)
 --    as they will be available in your neovim runtime.
 require("lazy").setup({
   -- NOTE: First, some plugins that don't require any configuration
+  {
+    "kawre/leetcode.nvim",
+    build = ":TSUpdate html", -- if you have `nvim-treesitter` installed
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+      -- "ibhagwan/fzf-lua",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+    },
+    opts = {
+      -- configuration goes here
+    },
+  },
 
   -- Git related plugins
   "tpope/vim-fugitive",
@@ -58,7 +73,7 @@ require("lazy").setup({
         "williamboman/mason.nvim",
         config = true,
         opts = {
-          ensure_installed = { "gopls", "ruff-lsp", "pyright" },
+          ensure_installed = { "gopls", "ruff", "pyright" },
         },
       },
       "williamboman/mason-lspconfig.nvim",
@@ -371,13 +386,61 @@ require("lazy").setup({
   --   end,
   -- },
   --
-  {
-    "3rd/image.nvim",
-    config = function()
-      -- ...
-    end,
-  },
-
+  -- {
+  --   "3rd/image.nvim",
+  --   event = "VeryLazy",
+  --   build = false,
+  --   dependencies = {
+  --     {
+  --       "nvim-treesitter/nvim-treesitter",
+  --       build = ":TSUpdate",
+  --       config = function()
+  --         require("nvim-treesitter.configs").setup({
+  --           ensure_installed = { "markdown" },
+  --           highlight = { enable = true },
+  --         })
+  --       end,
+  --     },
+  --   },
+  --   opts = {
+  --     backend = "kitty",
+  --     processor = "magick_cli", -- or "magick_cli"
+  --     integrations = {
+  --       markdown = {
+  --         enabled = true,
+  --         clear_in_insert_mode = false,
+  --         download_remote_images = true,
+  --         only_render_image_at_cursor = false,
+  --         floating_windows = false, -- if true, images will be rendered in floating markdown windows
+  --         filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
+  --       },
+  --       neorg = {
+  --         enabled = true,
+  --         filetypes = { "norg" },
+  --       },
+  --       typst = {
+  --         enabled = true,
+  --         filetypes = { "typst" },
+  --       },
+  --       html = {
+  --         enabled = false,
+  --       },
+  --       css = {
+  --         enabled = false,
+  --       },
+  --     },
+  --     max_width = nil,
+  --     max_height = nil,
+  --     max_width_window_percentage = nil,
+  --     max_height_window_percentage = 50,
+  --     window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
+  --     window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
+  --     editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
+  --     tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+  --     hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
+  --   },
+  -- },
+  --
   {
     "adelarsq/image_preview.nvim",
     event = "VeryLazy",
@@ -556,11 +619,18 @@ require("lazy").setup({
             disable = true,
           },
           {
-            name = "ChatGPT4o-meta",
+            name = "o1",
+            chat = true,
+            command = false,
+            model = { model = "o1-preview-2024-09-12" },
+            system_prompt = "",
+          },
+          {
+            name = "gpt-4o-meta",
             chat = true,
             command = false,
             -- string with model name or table with model name and parameters
-            model = { model = "gpt-4o", temperature = 1.1, top_p = 1 },
+            model = { model = "gpt-4o", temperature = 0.2, top_p = 0.7 },
             -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
 
@@ -604,7 +674,67 @@ The final prompt you output should adhere to the following structure below. Do n
 
 # Notes [optional]
 
-[optional: edge cases, details, and an area to call or repeat out specific important considerations] ]],
+[optional: edge cases, details, and an area to call or repeat out specific important considerations]
+
+# Response
+
+[your final response to the user query.]
+]],
+          },
+          {
+            name = "chatgpt-latest-meta",
+            chat = true,
+            command = false,
+            -- string with model name or table with model name and parameters
+            model = { model = "chatgpt-4o-latest", temperature = 0.6, top_p = 0.7 },
+            -- system prompt (use this to specify the persona/role of the AI)
+            system_prompt = [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
+
+# Guidelines
+
+- Understand the Task: Grasp the main objective, goals, requirements, constraints, and expected output.
+- Minimal Changes: If an existing prompt is provided, improve it only if it's simple. For complex prompts, enhance clarity and add missing elements without altering the original structure.
+- Reasoning Before Conclusions**: Encourage reasoning steps before any conclusions are reached. ATTENTION! If the user provides examples where the reasoning happens afterward, REVERSE the order! NEVER START EXAMPLES WITH CONCLUSIONS!
+    - Reasoning Order: Call out reasoning portions of the prompt and conclusion parts (specific fields by name). For each, determine the ORDER in which this is done, and whether it needs to be reversed.
+    - Conclusion, classifications, or results should ALWAYS appear last.
+- Examples: Include high-quality examples if helpful, using placeholders [in brackets] for complex elements.
+   - What kinds of examples may need to be included, how many, and whether they are complex enough to benefit from placeholders.
+- Clarity and Conciseness: Use clear, specific language. Avoid unnecessary instructions or bland statements.
+- Formatting: Use markdown features for readability. DO NOT USE ``` CODE BLOCKS UNLESS SPECIFICALLY REQUESTED.
+- Preserve User Content: If the input task or prompt includes extensive guidelines or examples, preserve them entirely, or as closely as possible. If they are vague, consider breaking down into sub-steps. Keep any details, guidelines, examples, variables, or placeholders provided by the user.
+- Constants: DO include constants in the prompt, as they are not susceptible to prompt injection. Such as guides, rubrics, and examples.
+- Output Format: Explicitly the most appropriate output format, in detail. This should include length and syntax (e.g. short sentence, paragraph, JSON, etc.)
+    - For tasks outputting well-defined or structured data (classification, JSON, etc.) bias toward outputting a JSON.
+    - JSON should never be wrapped in code blocks (```) unless explicitly requested.
+
+The final prompt you output should adhere to the following structure below. Do not include any additional commentary, only output the completed system prompt. SPECIFICALLY, do not include any additional messages at the start or end of the prompt. (e.g. no "---")
+
+[Concise instruction describing the task - this should be the first line in the prompt, no section header]
+
+[Additional details as needed.]
+
+[Optional sections with headings or bullet points for detailed steps.]
+
+# Steps [optional]
+
+[optional: a detailed breakdown of the steps necessary to accomplish the task]
+
+# Output Format
+
+[Specifically call out how the output should be formatted, be it response length, structure e.g. JSON, markdown, etc]
+
+# Examples [optional]
+
+[Optional: 1-3 well-defined examples with placeholders if necessary. Clearly mark where examples start and end, and what the input and output are. User placeholders as necessary.]
+[If the examples are shorter than what a realistic example is expected to be, make a reference with () explaining how real examples should be longer / shorter / different. AND USE PLACEHOLDERS! ]
+
+# Notes [optional]
+
+[optional: edge cases, details, and an area to call or repeat out specific important considerations]
+
+# Response
+
+Now give your response to the user.]],
           },
         },
         -- chat_shortcut_respond = { modes = { "n", "i", "v", "x" }, shortcut = "<C-g><C-g>" },
@@ -1119,16 +1249,6 @@ require("lspconfig").gopls.setup({
       analyses = {
         unusedparams = true,
       },
-    },
-  },
-})
-
-require("lspconfig").ruff_lsp.setup({
-  on_attach = on_attach,
-  init_options = {
-    settings = {
-      -- Any extra CLI arguments for `ruff` go here.
-      args = {},
     },
   },
 })
