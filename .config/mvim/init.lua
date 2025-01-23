@@ -162,6 +162,13 @@ local python_path = vim.fn.exepath("python3.9")
 vim.g.python3_host_prog = python_path
 
 
+vim.o.termguicolors = true
+-- Markdown
+-- vim.g.vim_markdown_math = 1
+-- vim.g.vim_markdown_frontmatter = 1
+-- vim.g.vim_markdown_toml_frontmatter = 1
+-- vim.g.vim_markdown_json_frontmatter = 1
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -201,6 +208,8 @@ vim.keymap.set("n", "<leader>-", "<CMD>Oil<CR>", { desc = "Open parent directory
 
 -- Neo-tree
 vim.keymap.set("n", "<leader>n", "<cmd>Neotree toggle<cr>", { desc = "Toggle Neotree" })
+
+vim.keymap.set("n", "<leader>b", ":%bd|e#|bd#<CR>", { desc = "close all other buffers" })
 
 
 -- [[ Basic Autocommands ]]
@@ -642,6 +651,9 @@ require('lazy').setup({
         pyright = {},
         rust_analyzer = {},
         ruff = {},
+        html = {},
+        htmx = {},
+        tflint = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -709,7 +721,10 @@ require('lazy').setup({
       {
         '<leader>f',
         function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
+          require('conform').format({
+            lsp_fallback = true,
+            async = false,
+          })
           vim.cmd("w")
         end,
         mode = '',
@@ -717,31 +732,25 @@ require('lazy').setup({
       },
     },
     opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
-        return {
-          timeout_ms = 500,
-          lsp_format = lsp_format_opt,
-        }
-      end,
       formatters_by_ft = {
-        lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        lua = { "stylua" },
+        -- Conform will run multiple formatters sequentially
+        go = { "goimports", "gofmt" },
+        python = { "ruff_format" },
+        markdown = { "markdownlint" },
+        -- You can customize some of the format options for the filetype (:help conform.format)
+        rust = { "rustfmt", lsp_format = "fallback" },
+        -- Conform will run the first available formatter
+        javascript = { "prettierd", "prettier", stop_after_first = true },
+        ["*"] = { "codespell" },
+        ["_"] = { "trim_whitespace" },
       },
+      default_format_opts = {
+        lsp_format = "fallback",
+      },
+      notify_on_error = true,
+      -- Conform will notify you when no formatters are available for the buffer
+      notify_no_formatters = true,
     },
   },
 
@@ -861,65 +870,11 @@ require('lazy').setup({
     end,
   },
 
-  { -- Linting
-    'mfussenegger/nvim-lint',
-    event = { 'BufReadPre', 'BufNewFile' },
-    config = function()
-      local lint = require 'lint'
-      -- lint.linters_by_ft = {
-      --   markdown = { 'markdownlint' },
-      -- }
+  -- { -- Linting
+  --   'mfussenegger/nvim-lint',
+  -- },
 
-      -- To allow other plugins to add linters to require('lint').linters_by_ft,
-      -- instead set linters_by_ft like this:
-      -- lint.linters_by_ft = lint.linters_by_ft or {}
-      -- lint.linters_by_ft['markdown'] = { 'markdownlint' }
-      --
-      -- However, note that this will enable a set of default linters,
-      -- which will cause errors unless these tools are available:
-      -- {
-      --   clojure = { "clj-kondo" },
-      --   dockerfile = { "hadolint" },
-      --   inko = { "inko" },
-      --   janet = { "janet" },
-      --   json = { "jsonlint" },
-      --   markdown = { "vale" },
-      --   rst = { "vale" },
-      --   ruby = { "ruby" },
-      --   terraform = { "tflint" },
-      --   text = { "vale" }
-      -- }
-      --
-      -- You can disable the default linters by setting their filetypes to nil:
-      -- lint.linters_by_ft['clojure'] = nil
-      -- lint.linters_by_ft['dockerfile'] = nil
-      -- lint.linters_by_ft['inko'] = nil
-      -- lint.linters_by_ft['janet'] = nil
-      -- lint.linters_by_ft['json'] = nil
-      -- lint.linters_by_ft['markdown'] = nil
-      -- lint.linters_by_ft['rst'] = nil
-      -- lint.linters_by_ft['ruby'] = nil
-      -- lint.linters_by_ft['terraform'] = nil
-      -- lint.linters_by_ft['text'] = nil
-
-      -- Create autocommand which carries out the actual linting
-      -- on the specified events.
-      local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
-      vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
-        group = lint_augroup,
-        callback = function()
-          -- Only run the linter in buffers that you can modify in order to
-          -- avoid superfluous noise, notably within the handy LSP pop-ups that
-          -- describe the hovered symbol using Markdown.
-          if vim.opt_local.modifiable:get() then
-            lint.try_lint()
-          end
-        end,
-      })
-    end,
-  },
-
-  {
+  { -- Color scheme
     "projekt0n/github-nvim-theme",
     priority = 1000,
     lazy = false,
@@ -963,6 +918,15 @@ require('lazy').setup({
             -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").chat_system_prompt,
           },
+          -- {
+          --   name = "o1-preview",
+          --   chat = true,
+          --   command = false,
+          --   -- string with model name or table with model name and parameters
+          --   model = { model = "o1-preview", temperature = 1, top_p = 1 },
+          --   -- system prompt (use this to specify the persona/role of the AI)
+          --   system_prompt = "",
+          -- },
           {
             provider = "openai",
             name = "ChatGPT4o-mini",
@@ -984,6 +948,7 @@ require('lazy').setup({
             system_prompt = require("gp.defaults").chat_system_prompt,
           },
         },
+        chat_shortcut_respond = { modes = { "n" }, shortcut = "<CR>" },
       }
       require("gp").setup(conf)
 
@@ -1107,11 +1072,21 @@ require('lazy').setup({
     },
     opts = {
       filesystem = {
-        window = {
-          mappings = {
-            ['\\'] = 'close_window',
+        filtered_items = {
+          hide_dotfiles = false,
+          hide_gitignored = false,
+          hide_by_name = {
+            "node_modules",
+          },
+          always_show = { -- remains visible even if other settings would normally hide it
+            ".gitignore",
+          },
+          never_show = {
+            ".DS_Store",
+            "thumbs.db",
           },
         },
+        use_libuv_file_watcher = true,
       },
     },
   },
