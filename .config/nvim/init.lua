@@ -52,6 +52,20 @@ require("lazy").setup({
       -- configuration goes here
     },
   },
+  {
+    'stevearc/oil.nvim',
+    ---@module 'oil'
+    ---@type oil.SetupOpts
+    opts = {
+      view_options = {
+        -- Show files and directories that start with "."
+        show_hidden = true,
+      }
+    },
+    -- Optional dependencies
+    dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
+  },
+
 
   -- Git related plugins
   "tpope/vim-fugitive",
@@ -86,6 +100,8 @@ require("lazy").setup({
       "folke/neodev.nvim",
     },
   },
+
+  { 'echasnovski/mini.nvim', version = '*' },
 
   {
     -- Autocompletion
@@ -1209,7 +1225,7 @@ wk.add({
   { "<leader>t",  group = "[T]oggle" },
   { "<leader>w",  group = "[W]orkspace" },
   { "<leader>m",  group = "[M]arkdown" },
-  { "<leader>a",  group = "[C]hatGPT" },
+  { "<leader>a",  group = "[C]hatGPT",        mode = { "n", "v" } },
 
   -- Search
   { "<leader>s/", live_grep_open_files,       desc = "[S]earch [/] in Open Files" },
@@ -1447,6 +1463,9 @@ iron.setup({
 -- iron also has a list of commands, see :h iron-commands for all available commands
 vim.keymap.set("n", "<leader>zo", "<cmd>IronRepl<cr>")
 vim.keymap.set("n", "<leader>zr", "<cmd>IronRestart<cr>")
+
+-- Oil
+vim.keymap.set("n", "<leader>-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
