@@ -141,7 +141,16 @@ require("lazy").setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { "folke/which-key.nvim", opts = {} },
+  -- { "folke/which-key.nvim", opts = {} },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     "lewis6991/gitsigns.nvim",
@@ -288,7 +297,7 @@ require("lazy").setup({
           {
             "filename",
             file_status = true, -- displays file status (readonly status, modified status)
-            path = 1, -- 0 = just filename, 1 = relative path, 2 = absolute path
+            path = 1,           -- 0 = just filename, 1 = relative path, 2 = absolute path
           },
         },
       },
@@ -305,7 +314,7 @@ require("lazy").setup({
   },
 
   -- "gc" to comment visual regions/lines
-  { "numToStr/Comment.nvim", opts = {} },
+  { "numToStr/Comment.nvim",             opts = {} },
 
   -- Fuzzy Finder (files, lsp, etc)
   {
@@ -363,13 +372,26 @@ require("lazy").setup({
     "christoomey/vim-tmux-navigator",
     keys = {
       { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Go to the previous pane" },
-      { "<C-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "Got to the left pane" },
-      { "<C-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Got to the down pane" },
-      { "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Got to the up pane" },
-      { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Got to the right pane" },
+      { "<C-h>",  "<cmd>TmuxNavigateLeft<cr>",     desc = "Got to the left pane" },
+      { "<C-j>",  "<cmd>TmuxNavigateDown<cr>",     desc = "Got to the down pane" },
+      { "<C-k>",  "<cmd>TmuxNavigateUp<cr>",       desc = "Got to the up pane" },
+      { "<C-l>",  "<cmd>TmuxNavigateRight<cr>",    desc = "Got to the right pane" },
     },
   },
-
+  {
+    "vhyrro/luarocks.nvim",
+    priority = 1001, -- this plugin needs to run before anything else
+    opts = {
+      rocks = { "magick" },
+    },
+  },
+  { "kiyoon/magick.nvim" },
+  -- {
+  --   "3rd/image.nvim",
+  --   processor = "magick_cli",
+  --   build = false,
+  --   opts = {}
+  -- },
   -- {
   --   "zbirenbaum/copilot-cmp",
   --   cmd = "Copilot",
@@ -463,7 +485,7 @@ require("lazy").setup({
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
-      "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
+      "3rd/image.nvim",              -- Optional image support in preview window: See `# Preview Mode` for more information
       {
         "s1n7ax/nvim-window-picker",
         version = "2.*",
@@ -488,6 +510,16 @@ require("lazy").setup({
       close_if_last_window = true,
       window = {
         width = 30,
+        mappings = {
+          ["P"] = {
+            "toggle_preview",
+            config = {
+              use_float = false,
+              use_image_nvim = true,
+              -- title = 'Neo-tree Preview',
+            },
+          },
+        },
       },
       filesystem = {
         filtered_items = {
@@ -562,33 +594,6 @@ require("lazy").setup({
   {
     "stevearc/conform.nvim",
     opts = {},
-    config = function()
-      require("conform").setup({
-        formatters_by_ft = {
-          lua = { "stylua" },
-          svelte = { { "prettierd", "prettier" } },
-          javascript = { { "prettierd", "prettier" } },
-          typescript = { { "prettierd", "prettier" } },
-          javascriptreact = { { "prettierd", "prettier" } },
-          typescriptreact = { { "prettierd", "prettier" } },
-          json = { { "prettierd", "prettier" } },
-          graphql = { { "prettierd", "prettier" } },
-          java = { "google-java-format" },
-          kotlin = { "ktlint" },
-          ruby = { "standardrb" },
-          markdown = { { "prettierd", "prettier" } },
-          erb = { "htmlbeautifier" },
-          html = { "htmlbeautifier" },
-          bash = { "beautysh" },
-          proto = { "buf" },
-          rust = { "rustfmt" },
-          yaml = { "yamlfix" },
-          toml = { "taplo" },
-          css = { { "prettierd", "prettier" } },
-          scss = { { "prettierd", "prettier" } },
-        },
-      })
-    end,
   },
 
   -- ChatGPT (Gp)
@@ -632,7 +637,8 @@ require("lazy").setup({
             -- string with model name or table with model name and parameters
             model = { model = "gpt-4o", temperature = 0.2, top_p = 0.7 },
             -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt = [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
+            system_prompt =
+            [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
 
 # Guidelines
 
@@ -688,7 +694,8 @@ The final prompt you output should adhere to the following structure below. Do n
             -- string with model name or table with model name and parameters
             model = { model = "chatgpt-4o-latest", temperature = 0.6, top_p = 0.7 },
             -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt = [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
+            system_prompt =
+            [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
 
 # Guidelines
 
@@ -932,22 +939,22 @@ local function telescope_live_grep_open_files()
     prompt_title = "Live Grep in Open Files",
   })
 end
-vim.keymap.set("n", "<leader>s/", telescope_live_grep_open_files, { desc = "[S]earch [/] in Open Files" })
-vim.keymap.set("n", "<leader>ss", require("telescope.builtin").builtin, { desc = "[S]earch [S]elect Telescope" })
-vim.keymap.set("n", "<leader>gf", require("telescope.builtin").git_files, { desc = "Search [G]it [F]iles" })
-vim.keymap.set("n", "<leader>gg", ":LazyGit<cr>", { desc = "LazyGit" })
-vim.keymap.set(
-  "n",
-  "<leader>sf",
-  "<cmd>lua require'telescope.builtin'.find_files({ find_command = {'rg', '--files', '--hidden', '-g', '!.git' }})<cr>",
-  { desc = "[S]earch [F]iles" }
-)
-vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
-vim.keymap.set("n", "<leader>sw", require("telescope.builtin").grep_string, { desc = "[S]earch current [W]ord" })
-vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
-vim.keymap.set("n", "<leader>sG", ":LiveGrepGitRoot<cr>", { desc = "[S]earch by [G]rep on Git Root" })
-vim.keymap.set("n", "<leader>sd", require("telescope.builtin").diagnostics, { desc = "[S]earch [D]iagnostics" })
-vim.keymap.set("n", "<leader>sr", require("telescope.builtin").resume, { desc = "[S]earch [R]esume" })
+-- vim.keymap.set("n", "<leader>s/", telescope_live_grep_open_files, { desc = "[S]earch [/] in Open Files" })
+-- vim.keymap.set("n", "<leader>ss", require("telescope.builtin").builtin, { desc = "[S]earch [S]elect Telescope" })
+-- vim.keymap.set("n", "<leader>gf", require("telescope.builtin").git_files, { desc = "Search [G]it [F]iles" })
+-- vim.keymap.set("n", "<leader>gg", ":LazyGit<cr>", { desc = "LazyGit" })
+-- vim.keymap.set(
+--   "n",
+--   "<leader>sf",
+--   "<cmd>lua require'telescope.builtin'.find_files({ find_command = {'rg', '--files', '--hidden', '-g', '!.git' }})<cr>",
+--   { desc = "[S]earch [F]iles" }
+-- )
+-- vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
+-- vim.keymap.set("n", "<leader>sw", require("telescope.builtin").grep_string, { desc = "[S]earch current [W]ord" })
+-- vim.keymap.set("n", "<leader>sg", require("telescope.builtin").live_grep, { desc = "[S]earch by [G]rep" })
+-- vim.keymap.set("n", "<leader>sG", ":LiveGrepGitRoot<cr>", { desc = "[S]earch by [G]rep on Git Root" })
+-- vim.keymap.set("n", "<leader>sd", require("telescope.builtin").diagnostics, { desc = "[S]earch [D]iagnostics" })
+-- vim.keymap.set("n", "<leader>sr", require("telescope.builtin").resume, { desc = "[S]earch [R]esume" })
 
 -- set <leader>f to format and save
 vim.keymap.set("n", "<leader>f", function()
@@ -1185,25 +1192,57 @@ vim.keymap.set("v", "<leader>awn", ":<C-u>'<,'>GpWhisperNew<cr>", keymapOptions(
 vim.keymap.set("v", "<leader>awv", ":<C-u>'<,'>GpWhisperVnew<cr>", keymapOptions("Visual Whisper Vnew"))
 vim.keymap.set("v", "<leader>awt", ":<C-u>'<,'>GpWhisperTabnew<cr>", keymapOptions("Visual Whisper Tabnew"))
 
--- document existing key chains
-require("which-key").register({
-  ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-  ["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
-  ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
-  ["<leader>h"] = { name = "Git [H]unk", _ = "which_key_ignore" },
-  ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-  ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
-  ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
-  ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
-  ["<leader>m"] = { name = "[M]arkdown", _ = "which_key_ignore" },
-  ["<leader>a"] = { name = "[C]hatGPT", _ = "which_key_ignore" },
+local wk = require("which-key")
+
+local telescope = require("telescope.builtin")
+local live_grep_open_files = telescope_live_grep_open_files
+
+wk.add({
+  -- Adding your existing key chains
+  mode = "n", -- Specify that the following mappings are for NORMAL mode
+  { "<leader>c",  group = "[C]ode" },
+  { "<leader>d",  group = "[D]ocument" },
+  { "<leader>g",  group = "[G]it" },
+  { "<leader>h",  group = "Git [H]unk" },
+  { "<leader>r",  group = "[R]ename" },
+  { "<leader>s",  group = "[S]earch" },
+  { "<leader>t",  group = "[T]oggle" },
+  { "<leader>w",  group = "[W]orkspace" },
+  { "<leader>m",  group = "[M]arkdown" },
+  { "<leader>a",  group = "[C]hatGPT" },
+
+  -- Search
+  { "<leader>s/", live_grep_open_files,       desc = "[S]earch [/] in Open Files" },
+  { "<leader>ss", telescope.builtin,          desc = "[S]earch [S]elect Telescope" },
+  { "<leader>sw", telescope.grep_string,      desc = "[S]earch current [W]ord" },
+  { "<leader>sg", telescope.live_grep,        desc = "[S]earch by [G]rep" },
+  { "<leader>sG", "<cmd>LiveGrepGitRoot<cr>", desc = "[S]earch by [G]rep on Git Root" },
+  { "<leader>sh", telescope.help_tags,        desc = "[S]earch [H]elp" },
+  { "<leader>sd", telescope.diagnostics,      desc = "[S]earch [D]iagnostics" },
+  {
+    "<leader>sf",
+    function()
+      require("telescope.builtin").find_files({
+        find_command = { "rg", "--files", "--hidden", "-g", "!.git" },
+      })
+    end,
+    desc = "[S]earch [F]iles",
+  },
+
+  -- Git-related search
+  { "<leader>gf", telescope.git_files, desc = "Search [G]it [F]iles" },
+  { "<leader>gg", "<cmd>LazyGit<cr>",  desc = "LazyGit" },
+
+  -- Resume functionality under [S]earch
+  { "<leader>sr", telescope.resume,    desc = "[S]earch [R]esume" },
+
+  -- VISUAL mode key mappings
+  {
+    mode = "v", -- Specify that the following mappings are for VISUAL mode
+    { "<leader>",  desc = "VISUAL <leader>", group = "visual" },
+    { "<leader>h", desc = "Git [H]unk",      group = "githunk" },
+  },
 })
--- register which-key VISUAL mode
--- required for visual <leader>hs (hunk stage) to work
-require("which-key").register({
-  ["<leader>"] = { name = "VISUAL <leader>" },
-  ["<leader>h"] = { "Git [H]unk" },
-}, { mode = "v" })
 
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
@@ -1222,7 +1261,6 @@ local servers = {
   rust_analyzer = {},
   -- pyright = {},
   clangd = {},
-  tsserver = {},
   html = { filetypes = { "html", "twig", "hbs", "templ" } },
   templ = {},
   htmx = { filetypes = { "html", "templ" } },
@@ -1260,7 +1298,7 @@ require("lspconfig").pyright.setup({
     },
     python = {
       analysis = {
-        ignore = { "*" }, -- Using Ruff
+        ignore = { "*" },         -- Using Ruff
         typeCheckingMode = "off", -- Using mypy
       },
     },
