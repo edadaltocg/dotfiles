@@ -102,7 +102,7 @@ vim.g.have_nerd_font = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -145,7 +145,14 @@ vim.opt.splitbelow = true
 --  See `:help 'list'`
 --  and `:help 'listchars'`
 vim.opt.list = true
--- vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+
+vim.g.editorconfig = true
+vim.cmd([[
+  autocmd FileType make setlocal noexpandtab
+  autocmd FileType make setlocal tabstop=4
+  autocmd FileType make setlocal shiftwidth=2
+]])
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
@@ -163,6 +170,7 @@ vim.g.python3_host_prog = python_path
 
 
 vim.o.termguicolors = true
+
 -- Markdown
 -- vim.g.vim_markdown_math = 1
 -- vim.g.vim_markdown_frontmatter = 1
@@ -933,7 +941,7 @@ require('lazy').setup({
             chat = true,
             command = false,
             -- string with model name or table with model name and parameters
-            model = { model = "gpt-4o-mini", temperature = 1, top_p = 1 },
+            model = { model = "gpt-4o-mini", temperature = 0, top_p = 1 },
             -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").chat_system_prompt,
           },
@@ -943,7 +951,7 @@ require('lazy').setup({
             chat = true,
             command = true,
             -- string with model name or table with model name and parameters
-            model = { model = "gpt-4o", temperature = 0.2, top_p = 1 },
+            model = { model = "gpt-4o", temperature = 0, top_p = 1 },
             -- system prompt (use this to specify the persona/role of the AI)
             system_prompt = require("gp.defaults").chat_system_prompt,
           },
@@ -965,6 +973,8 @@ require('lazy').setup({
     ---@type render.md.UserConfig
     opts = {},
   },
+
+  { 'brenoprata10/nvim-highlight-colors' },
 
   {
     "iamcco/markdown-preview.nvim",
@@ -1092,7 +1102,7 @@ require('lazy').setup({
   },
 
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  { 'folke/todo-comments.nvim',          event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -1112,7 +1122,7 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
-      require('mini.completion').setup({ delay = { completion = 100, info = 1000, signature = 50 }, })
+      require('mini.completion').setup({ delay = { completion = 10 ^ 7, info = 100, signature = 50 }, })
       require('mini.bracketed').setup()
       require('mini.comment').setup()
       require('mini.pairs').setup()
@@ -1343,3 +1353,5 @@ require("which-key").add({
     { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
   }
 })
+
+require('nvim-highlight-colors').setup({ render = 'foreground' })
