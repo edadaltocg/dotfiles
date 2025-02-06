@@ -1,9 +1,13 @@
 .DS_Store
 __pycache__/
 .gp.md
-.config/packer
-.config/stripe
-.config/gh
+.config/*
+!.config/aerospace
+!.config/kickstart.nvim
+!.config/nvim
+!.config/mvim
+!.config/skhd
+!.config/alacritty
 .zshenv
 rclone
 gh

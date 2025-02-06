@@ -269,3 +269,7 @@ export PYTHON_INTERPRETER="$(uv python find --system)"
 # alias python="$PYTHON_INTERPRETER"
 export PATH="$(dirname $PYTHON_INTERPRETER):$PATH"
 alias mvim='NVIM_APPNAME=mvim nvim' # LazyVim
+autoload -U compinit; compinit
+
+
+typeset -g ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=30'

@@ -53,19 +53,18 @@ require("lazy").setup({
     },
   },
   {
-    'stevearc/oil.nvim',
+    "stevearc/oil.nvim",
     ---@module 'oil'
     ---@type oil.SetupOpts
     opts = {
       view_options = {
         -- Show files and directories that start with "."
         show_hidden = true,
-      }
+      },
     },
     -- Optional dependencies
     dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
   },
-
 
   -- Git related plugins
   "tpope/vim-fugitive",
@@ -101,7 +100,7 @@ require("lazy").setup({
     },
   },
 
-  { 'echasnovski/mini.nvim', version = '*' },
+  { "echasnovski/mini.nvim", version = "*" },
 
   {
     -- Autocompletion
@@ -313,7 +312,7 @@ require("lazy").setup({
           {
             "filename",
             file_status = true, -- displays file status (readonly status, modified status)
-            path = 1,           -- 0 = just filename, 1 = relative path, 2 = absolute path
+            path = 1, -- 0 = just filename, 1 = relative path, 2 = absolute path
           },
         },
       },
@@ -330,7 +329,7 @@ require("lazy").setup({
   },
 
   -- "gc" to comment visual regions/lines
-  { "numToStr/Comment.nvim",             opts = {} },
+  { "numToStr/Comment.nvim", opts = {} },
 
   -- Fuzzy Finder (files, lsp, etc)
   {
@@ -388,10 +387,10 @@ require("lazy").setup({
     "christoomey/vim-tmux-navigator",
     keys = {
       { "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Go to the previous pane" },
-      { "<C-h>",  "<cmd>TmuxNavigateLeft<cr>",     desc = "Got to the left pane" },
-      { "<C-j>",  "<cmd>TmuxNavigateDown<cr>",     desc = "Got to the down pane" },
-      { "<C-k>",  "<cmd>TmuxNavigateUp<cr>",       desc = "Got to the up pane" },
-      { "<C-l>",  "<cmd>TmuxNavigateRight<cr>",    desc = "Got to the right pane" },
+      { "<C-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "Got to the left pane" },
+      { "<C-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Got to the down pane" },
+      { "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Got to the up pane" },
+      { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Got to the right pane" },
     },
   },
   {
@@ -501,7 +500,7 @@ require("lazy").setup({
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
-      "3rd/image.nvim",              -- Optional image support in preview window: See `# Preview Mode` for more information
+      "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
       {
         "s1n7ax/nvim-window-picker",
         version = "2.*",
@@ -653,8 +652,7 @@ require("lazy").setup({
             -- string with model name or table with model name and parameters
             model = { model = "gpt-4o", temperature = 0.2, top_p = 0.7 },
             -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt =
-            [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
+            system_prompt = [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
 
 # Guidelines
 
@@ -710,8 +708,7 @@ The final prompt you output should adhere to the following structure below. Do n
             -- string with model name or table with model name and parameters
             model = { model = "chatgpt-4o-latest", temperature = 0.6, top_p = 0.7 },
             -- system prompt (use this to specify the persona/role of the AI)
-            system_prompt =
-            [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
+            system_prompt = [[Given a task description or existing prompt, produce a detailed system prompt to guide a language model in completing the task effectively.
 
 # Guidelines
 
@@ -1097,12 +1094,12 @@ local on_attach = function(_, bufnr)
     vim.lsp.buf.code_action({ context = { only = { "quickfix", "refactor", "source" } } })
   end, "[C]ode [A]ction")
 
-  nmap("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
+  nmap("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]definition")
   nmap("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
   nmap("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
-  nmap("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
-  nmap("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
-  nmap("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
+  nmap("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]definition")
+  nmap("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]symbols")
+  nmap("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]symbols")
 
   -- See `:help K` for why this keymap
   nmap("K", vim.lsp.buf.hover, "Hover Documentation")
@@ -1196,13 +1193,13 @@ vim.keymap.set("v", "<leader>awa", ":<C-u>'<,'>GpWhisperAppend<cr>", keymapOptio
 vim.keymap.set("v", "<leader>awb", ":<C-u>'<,'>GpWhisperPrepend<cr>", keymapOptions("Visual Whisper Prepend (before)"))
 
 vim.keymap.set({ "n" }, "<leader>awp", "<cmd>GpWhisperPopup<cr>", keymapOptions("Whisper Popup"))
-vim.keymap.set({ "n" }, "<leader>awe", "<cmd>GpWhisperEnew<cr>", keymapOptions("Whisper Enew"))
+vim.keymap.set({ "n" }, "<leader>awe", "<cmd>GpWhisperEnew<cr>", keymapOptions("Whisper New"))
 vim.keymap.set({ "n" }, "<leader>awn", "<cmd>GpWhisperNew<cr>", keymapOptions("Whisper New"))
 vim.keymap.set({ "n" }, "<leader>awv", "<cmd>GpWhisperVnew<cr>", keymapOptions("Whisper Vnew"))
 vim.keymap.set({ "n" }, "<leader>awt", "<cmd>GpWhisperTabnew<cr>", keymapOptions("Whisper Tabnew"))
 
 vim.keymap.set("v", "<leader>awp", ":<C-u>'<,'>GpWhisperPopup<cr>", keymapOptions("Visual Whisper Popup"))
-vim.keymap.set("v", "<leader>awe", ":<C-u>'<,'>GpWhisperEnew<cr>", keymapOptions("Visual Whisper Enew"))
+vim.keymap.set("v", "<leader>awe", ":<C-u>'<,'>GpWhisperEnew<cr>", keymapOptions("Visual Whisper New"))
 vim.keymap.set("v", "<leader>awn", ":<C-u>'<,'>GpWhisperNew<cr>", keymapOptions("Visual Whisper New"))
 vim.keymap.set("v", "<leader>awv", ":<C-u>'<,'>GpWhisperVnew<cr>", keymapOptions("Visual Whisper Vnew"))
 vim.keymap.set("v", "<leader>awt", ":<C-u>'<,'>GpWhisperTabnew<cr>", keymapOptions("Visual Whisper Tabnew"))
@@ -1215,25 +1212,25 @@ local live_grep_open_files = telescope_live_grep_open_files
 wk.add({
   -- Adding your existing key chains
   mode = "n", -- Specify that the following mappings are for NORMAL mode
-  { "<leader>c",  group = "[C]ode" },
-  { "<leader>d",  group = "[D]ocument" },
-  { "<leader>g",  group = "[G]it" },
-  { "<leader>h",  group = "Git [H]unk" },
-  { "<leader>r",  group = "[R]ename" },
-  { "<leader>s",  group = "[S]earch" },
-  { "<leader>t",  group = "[T]oggle" },
-  { "<leader>w",  group = "[W]orkspace" },
-  { "<leader>m",  group = "[M]arkdown" },
-  { "<leader>a",  group = "[C]hatGPT",        mode = { "n", "v" } },
+  { "<leader>c", group = "[C]ode" },
+  { "<leader>d", group = "[D]ocument" },
+  { "<leader>g", group = "[G]it" },
+  { "<leader>h", group = "Git [H]unk" },
+  { "<leader>r", group = "[R]ename" },
+  { "<leader>s", group = "[S]earch" },
+  { "<leader>t", group = "[T]oggle" },
+  { "<leader>w", group = "[W]orkspace" },
+  { "<leader>m", group = "[M]arkdown" },
+  { "<leader>a", group = "[C]hatGPT", mode = { "n", "v" } },
 
   -- Search
-  { "<leader>s/", live_grep_open_files,       desc = "[S]earch [/] in Open Files" },
-  { "<leader>ss", telescope.builtin,          desc = "[S]earch [S]elect Telescope" },
-  { "<leader>sw", telescope.grep_string,      desc = "[S]earch current [W]ord" },
-  { "<leader>sg", telescope.live_grep,        desc = "[S]earch by [G]rep" },
+  { "<leader>s/", live_grep_open_files, desc = "[S]earch [/] in Open Files" },
+  { "<leader>ss", telescope.builtin, desc = "[S]earch [S]elect Telescope" },
+  { "<leader>sw", telescope.grep_string, desc = "[S]earch current [W]ord" },
+  { "<leader>sg", telescope.live_grep, desc = "[S]earch by [G]rep" },
   { "<leader>sG", "<cmd>LiveGrepGitRoot<cr>", desc = "[S]earch by [G]rep on Git Root" },
-  { "<leader>sh", telescope.help_tags,        desc = "[S]earch [H]elp" },
-  { "<leader>sd", telescope.diagnostics,      desc = "[S]earch [D]iagnostics" },
+  { "<leader>sh", telescope.help_tags, desc = "[S]earch [H]elp" },
+  { "<leader>sd", telescope.diagnostics, desc = "[S]earch [D]iagnostics" },
   {
     "<leader>sf",
     function()
@@ -1246,16 +1243,16 @@ wk.add({
 
   -- Git-related search
   { "<leader>gf", telescope.git_files, desc = "Search [G]it [F]iles" },
-  { "<leader>gg", "<cmd>LazyGit<cr>",  desc = "LazyGit" },
+  { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
 
   -- Resume functionality under [S]earch
-  { "<leader>sr", telescope.resume,    desc = "[S]earch [R]esume" },
+  { "<leader>sr", telescope.resume, desc = "[S]earch [R]esume" },
 
   -- VISUAL mode key mappings
   {
     mode = "v", -- Specify that the following mappings are for VISUAL mode
-    { "<leader>",  desc = "VISUAL <leader>", group = "visual" },
-    { "<leader>h", desc = "Git [H]unk",      group = "githunk" },
+    { "<leader>", desc = "VISUAL <leader>", group = "visual" },
+    { "<leader>h", desc = "Git [H]unk", group = "githunk" },
   },
 })
 
@@ -1313,7 +1310,7 @@ require("lspconfig").pyright.setup({
     },
     python = {
       analysis = {
-        ignore = { "*" },         -- Using Ruff
+        ignore = { "*" }, -- Using Ruff
         typeCheckingMode = "off", -- Using mypy
       },
     },
