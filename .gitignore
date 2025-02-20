@@ -8,7 +8,6 @@ __pycache__/
 !.config/mvim
 !.config/skhd
 !.config/alacritty
-.zshenv
 rclone
 gh
 .ipynb_checkpoints

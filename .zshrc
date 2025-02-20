@@ -265,11 +265,10 @@ setopt hist_verify
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
-export PYTHON_INTERPRETER="$(uv python find --system)"
+# export PYTHON_INTERPRETER="$(uv python find --system)"
 # alias python="$PYTHON_INTERPRETER"
-export PATH="$(dirname $PYTHON_INTERPRETER):$PATH"
-alias mvim='NVIM_APPNAME=mvim nvim' # LazyVim
+# export PATH="$(dirname $PYTHON_INTERPRETER):$PATH"
+alias mvim='NVIM_APPNAME=mvim nvim'
 autoload -U compinit; compinit
-
 
 typeset -g ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=30'
